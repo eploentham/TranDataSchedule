@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -52,7 +53,15 @@ namespace tranDataSchedule
         {
             //String dateStart = "", dateEnd = "";
             String sql = "", carId="", day2="";
+            StringBuilder sql1 = new StringBuilder();
             DataTable dtCar = new DataTable();
+            MySqlConnection conn = new MySql.Data.MySqlClient.MySqlConnection();
+            MySqlCommand com = new MySqlCommand();
+
+            conn.ConnectionString = txtConnDaily.Text;
+            conn.Open();
+            com.Connection = conn;
+
             Double km = 0.0;
             pB1.Show();
             pB1.Visible = true;
@@ -70,17 +79,35 @@ namespace tranDataSchedule
             pB1.Maximum = dtCar.Rows.Count;
             for (int i = 0; i < dtCar.Rows.Count; i++)
             {
-                carId = dtCar.Rows[i]["car_id"].ToString();
+                sql1.Clear();
+                //carId = dtCar.Rows[i]["car_id"].ToString();
                 //lB1.Items.Add(carId);
-                km = tdsC.sql.SumDistanceOfDate(dateStart, dtCar.Rows[i]["imei"].ToString(), txtConnGPS01.Text);
+                //km = tdsC.sql.SumDistanceOfDate(dateStart, dtCar.Rows[i]["imei"].ToString(), txtConnGPS01.Text);
                 //    km = tdsC.sql.SumDistanceOfDate(dateStart, dtCar.Rows[i]["imei"].ToString(), txtConGPSOnLIne.Text);
                 //day2 = tdsC.sql.SubAvgOfDay2(dateStart, dtCar.Rows[i]["imei"].ToString(), tdsC.conn.conn01.ConnectionString);
                 day2 = tdsC.sql.SubAvgOfDay2(dateStart, dtCar.Rows[i]["imei"].ToString(), txtConnGPS01.Text);
+                sql1.Append("Insert Into car_daily(car_daily_id, car_id, imei, daily_date, distance, income, trip_cnt, trip_distance) ")
+                .Append("Values(UUID()").Append(",'").Append(dtCar.Rows[i]["car_id"].ToString()).Append("','").Append(dtCar.Rows[i]["imei"].ToString())
+                .Append("','").Append(dateStart).Append("','").Append(tdsC.sql.SumDistanceOfDate(dateStart, dtCar.Rows[i]["imei"].ToString(), txtConnGPS01.Text))
+                .Append("',").Append(day2.ToString().Split(':')[1]).Append(",'").Append(day2.ToString().Split(':')[0]).Append("','").Append(day2.ToString().Split(':')[2]).Append("')");
+                com.CommandText = sql1.ToString();
+                try
+                {
+                    com.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    lB1.Items.Add(ex.Message.ToString());
+                }
+                finally
+                {
 
-                lB1.Items.Add(carId + " ระยะทาง " + km.ToString() + " จำนวนรับผู้โดยสาร " + day2[0] + " รายได้ " + day2[1] + " ระยะทางรับผู้โดยสาร " + day2[2]);
+                }
+                lB1.Items.Add(dtCar.Rows[i]["car_id"].ToString() + " ระยะทาง " + tdsC.sql.SumDistanceOfDate(dateStart, dtCar.Rows[i]["imei"].ToString(), txtConnGPS01.Text) + " จำนวนรับผู้โดยสาร " + day2[0] + " รายได้ " + day2[1] + " ระยะทางรับผู้โดยสาร " + day2[2]);
                 lB1.Refresh();
                 pB1.Value = i;
             }
+            conn.Close();
             pB1.Visible = false;
         }
 
