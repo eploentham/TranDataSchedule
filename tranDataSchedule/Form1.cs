@@ -47,7 +47,7 @@ namespace tranDataSchedule
         }
         private void setTimeCurrent()
         {
-            txtTimeCurrent.Text = System.DateTime.Now.ToShortTimeString();
+            txtTimeCurrent.Text = String.Format("{0:hhmm}",System.DateTime.Now);
         }
         private void selectCar(String dateStart, String dateEnd)
         {
