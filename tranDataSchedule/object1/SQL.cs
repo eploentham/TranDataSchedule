@@ -1030,6 +1030,12 @@ namespace tranDataSchedule.object1
             if (m == GeoCodeCalcMeasurement.Kilometers) { radius = EarthRadiusInKilometers; }
             return radius * 2 * 1.075 * Math.Asin(Math.Min(1, Math.Sqrt((Math.Pow(Math.Sin((DiffRadian(lat1, lat2)) / 2.0), 2.0) + Math.Cos(ToRadian(lat1)) * Math.Cos(ToRadian(lat2)) * Math.Pow(Math.Sin((DiffRadian(lng1, lng2)) / 2.0), 2.0)))));
         }
+        public double CalcDistanceKilo(double lat1, double lng1, double lat2, double lng2)
+        {
+            double radius = EarthRadiusInMiles;
+            radius = EarthRadiusInKilometers;
+            return radius * 2 * 1.075 * Math.Asin(Math.Min(1, Math.Sqrt((Math.Pow(Math.Sin((DiffRadian(lat1, lat2)) / 2.0), 2.0) + Math.Cos(ToRadian(lat1)) * Math.Cos(ToRadian(lat2)) * Math.Pow(Math.Sin((DiffRadian(lng1, lng2)) / 2.0), 2.0)))));
+        }
         public enum GeoCodeCalcMeasurement : int
         {
             Miles = 0,

@@ -9,12 +9,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using tranDataSchedule.Control;
+using tranDataSchedule.object1;
 
 namespace tranDataSchedule
 {
     public partial class Form1 : Form
     {
         TranDataScheduleControl tdsC;
+        SQL sql;
         public Form1()
         {
             InitializeComponent();
@@ -23,6 +25,7 @@ namespace tranDataSchedule
         private void initConfig()
         {
             tdsC = new TranDataScheduleControl();
+            sql = new SQL();
         }
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -62,6 +65,7 @@ namespace tranDataSchedule
             MySqlCommand com01 = new MySqlCommand();
             DataTable dt = new DataTable();
             int rowStart = 0;
+            
 
             Boolean stripStart = false;
             Boolean stripStartOld = false;
@@ -77,7 +81,7 @@ namespace tranDataSchedule
             com01.Connection = conn01;
             MySqlDataAdapter adap01 = new MySqlDataAdapter(com01);
 
-            Double km = 0.0;
+            Double km = 0.0, distinct=0.0;
             pB1.Show();
             pB1.Visible = true;
             pB1.Minimum = 0;
@@ -98,9 +102,13 @@ namespace tranDataSchedule
                 sqlTrip.Clear();
                 stripStart = false;
                 stripEnd = false;
+                if (!dtCar.Rows[i]["imei"].ToString().Equals("58063983"))
+                {
+                    continue;
+                }
                 //sqlTrip.Append("Select imei, gps_date, gps_time, gps_input1, gps_speed From positionbackup Where imei = '")
                 //    .Append(dtCar.Rows[i]["imei"].ToString()).Append("' and gps_ign = 1 and gps_date = '").Append(dateStart).Append("' Order By gps_time");
-                sqlTrip.Append("Select imei, gps_date, gps_time, gps_input1, gps_speed From positionbackup Where imei = '")
+                sqlTrip.Append("Select imei, gps_date, gps_time, gps_input1, gps_speed, gps_lat, gps_lon From positionbackup Where imei = '")
                     .Append(dtCar.Rows[i]["imei"].ToString()).Append("'  and gps_date = '").Append(dateStart).Append("' Order By gps_time");
                 com01.CommandText = sqlTrip.ToString();
                 dt.Rows.Clear();
@@ -108,6 +116,7 @@ namespace tranDataSchedule
                 if (dt.Rows.Count > 0)
                 {
                     rowStart = 0;
+                    distinct = 0.0;
                     for (int j = 0; j < dt.Rows.Count; j++)
                     {
                         if (j == 0) continue;
@@ -146,10 +155,22 @@ namespace tranDataSchedule
                                 insertTrip = true;
                                 //lB1.Items.Add("Trip End " + dt.Rows[j]["gps_time"]);
                             }
+                            if ((int)dt.Rows[j]["gps_speed"] >= txtGPSError.Value)// รถจอด แต่ gps ส่งข้อมูลเป็น นาที ทำให้อาจ จอดปุ้บ แล้วรับคนใหม่ ทันที
+                            {
+                                stripEnd = true;
+                                insertTrip = true;
+                                //lB1.Items.Add("Trip End " + dt.Rows[j]["gps_time"]);
+                            }
                         }
                         if(stripStart && stripEnd && insertTrip)
                         {
-                            lB1.Items.Add(" imei " + dt.Rows[rowStart]["imei"] +" Trip Start " + dt.Rows[rowStart]["gps_time"]+ " Trip End " + dt.Rows[j]["gps_time"]);
+                            distinct = 0.0;
+                            for (int k = rowStart; k < j; k++)
+                            {
+                                distinct += tdsC.sql.CalcDistanceKilo(Convert.ToDouble(dt.Rows[k - 1]["gps_lat"]) / 1000000, Convert.ToDouble(dt.Rows[k - 1]["gps_lon"]) / 1000000, Convert.ToDouble(dt.Rows[k]["gps_lat"]) / 1000000, Convert.ToDouble(dt.Rows[k]["gps_lon"]) / 1000000);
+
+                            }
+                            lB1.Items.Add(" imei " + dt.Rows[rowStart]["imei"] +" Trip Start " + dt.Rows[rowStart]["gps_time"]+ " Trip End " + dt.Rows[j]["gps_time"]+" ระยะทาง "+ distinct);
                             insertTrip = false;
                         }
                     }

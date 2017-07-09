@@ -55,13 +55,18 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.txtConnDaily = new System.Windows.Forms.TextBox();
+            this.txtGPSError = new System.Windows.Forms.NumericUpDown();
+            this.label8 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.gbManual.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.txtGPSError)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label8);
+            this.groupBox1.Controls.Add(this.txtGPSError);
             this.groupBox1.Controls.Add(this.label6);
             this.groupBox1.Controls.Add(this.txtTimeEnd);
             this.groupBox1.Controls.Add(this.btnCheckData);
@@ -313,6 +318,27 @@
             this.txtConnDaily.Size = new System.Drawing.Size(510, 20);
             this.txtConnDaily.TabIndex = 9;
             // 
+            // txtGPSError
+            // 
+            this.txtGPSError.Location = new System.Drawing.Point(627, 150);
+            this.txtGPSError.Maximum = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+            this.txtGPSError.Name = "txtGPSError";
+            this.txtGPSError.Size = new System.Drawing.Size(65, 20);
+            this.txtGPSError.TabIndex = 7;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(527, 134);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(111, 13);
+            this.label8.TabIndex = 8;
+            this.label8.Text = "ค่าคลาดเคลื่อน จอดรถ";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -339,6 +365,7 @@
             this.groupBox2.PerformLayout();
             this.gbManual.ResumeLayout(false);
             this.gbManual.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.txtGPSError)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -372,6 +399,8 @@
         private System.Windows.Forms.MaskedTextBox txtTimeEnd;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox txtConnDaily;
+        private System.Windows.Forms.NumericUpDown txtGPSError;
+        private System.Windows.Forms.Label label8;
     }
 }
 

@@ -17,6 +17,11 @@ namespace tranDataSchedule.Control
         public CarDB carDb;
         public Car car;
         public SQL sql;
+        public enum GeoCodeCalcMeasurement : int
+        {
+            Miles = 0,
+            Kilometers = 1
+        }
 
         public TranDataScheduleControl()
         {
