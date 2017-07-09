@@ -28,11 +28,14 @@ namespace tranDataSchedule
         {
             chkAuto.Checked = true;
             showChkAuto();
-            setTimeCurrent();
+            txtTimeCurrent.Text = tdsC.setTimeCurrent();
             timer1.Interval = 1000 * 60;
             timer1.Start();
-            txtConGPSOnLIne.Text = tdsC.conn.connOnLine.ConnectionString;
+            txtConGPSOnLIne.Text = tdsC.conn.connOnLine.ConnectionString;//server=localhost;database=gpsonline;user id=root;password=-;port=6318
             txtConnGPS01.Text = tdsC.conn.conn01.ConnectionString;
+            txtConGPSOnLIne.Text = "server=localhost;database=gpsonline;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
+            txtConnGPS01.Text = "server=localhost;database=gps_backup_01;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
+            txtConnDaily.Text = "server=localhost;database=daily_report;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
         }
         private void showChkAuto()
         {
@@ -45,10 +48,7 @@ namespace tranDataSchedule
                 gbManual.Visible = true;
             }
         }
-        private void setTimeCurrent()
-        {
-            txtTimeCurrent.Text = String.Format("{0:hhmm}",System.DateTime.Now);
-        }
+        
         private void selectCar(String dateStart, String dateEnd)
         {
             //String dateStart = "", dateEnd = "";
@@ -66,6 +66,7 @@ namespace tranDataSchedule
             Boolean stripStart = false;
             Boolean stripStartOld = false;
             Boolean stripEnd = false;
+            Boolean insertTrip = false;
 
 
             connDaily.ConnectionString = txtConnDaily.Text;
@@ -102,6 +103,7 @@ namespace tranDataSchedule
                 sqlTrip.Append("Select imei, gps_date, gps_time, gps_input1, gps_speed From positionbackup Where imei = '")
                     .Append(dtCar.Rows[i]["imei"].ToString()).Append("'  and gps_date = '").Append(dateStart).Append("' Order By gps_time");
                 com01.CommandText = sqlTrip.ToString();
+                dt.Rows.Clear();
                 adap01.Fill(dt);
                 if (dt.Rows.Count > 0)
                 {
@@ -109,33 +111,46 @@ namespace tranDataSchedule
                     for (int j = 0; j < dt.Rows.Count; j++)
                     {
                         if (j == 0) continue;
-                        if (dt.Rows[rowStart]["imei"].ToString().Equals("56072558"))
+                        if (dt.Rows[j]["imei"].ToString().Equals("58063983"))
                         {
-                            if (dt.Rows[rowStart]["gps_time"].ToString().Equals("06:13:31"))
+                            if (dt.Rows[j]["gps_time"].ToString().Equals("09:37:22"))
+                            {
+                                sql = "";
+                            }
+                            if (dt.Rows[j]["gps_time"].ToString().Equals("11:22:22"))
                             {
                                 sql = "";
                             }
                         }
-                        if (((Boolean)dt.Rows[j]["gps_input1"] == true) && ((Boolean)dt.Rows[j-1]["gps_input1"] == false))//trip start
+                        if (((Boolean)dt.Rows[j]["gps_input1"] == true) && ((Boolean)dt.Rows[j-1]["gps_input1"] == false))//trip start 
                         {
-                            if ((int)dt.Rows[j]["gps_speed"]>0)
+                            if ((int)dt.Rows[j]["gps_speed"]>0)// กดmeter แล้วออกรถเลย
                             {
                                 stripStart = true;
+                                stripEnd = false;
                                 rowStart = j;
                                 //lB1.Items.Add("Trip Start "+ dt.Rows[j]["gps_time"]);
+                            }
+                            if (((int)dt.Rows[j]["gps_speed"] == 0) && ((int)dt.Rows[j + 1]["gps_speed"] > 0))// กดmeter แล้วยังไม่ออกรถทันที
+                            {
+                                stripStart = true;
+                                stripEnd = false;
+                                rowStart = j;
                             }
                         }
                         if(((Boolean)dt.Rows[j]["gps_input1"] == false) && ((Boolean)dt.Rows[j - 1]["gps_input1"] == true))//trip end
                         {
-                            if ((int)dt.Rows[j]["gps_speed"] == 0)
+                            if ((int)dt.Rows[j]["gps_speed"] == 0)// รถจอด
                             {
                                 stripEnd = true;
+                                insertTrip = true;
                                 //lB1.Items.Add("Trip End " + dt.Rows[j]["gps_time"]);
                             }
                         }
-                        if(stripStart && stripEnd)
+                        if(stripStart && stripEnd && insertTrip)
                         {
                             lB1.Items.Add(" imei " + dt.Rows[rowStart]["imei"] +" Trip Start " + dt.Rows[rowStart]["gps_time"]+ " Trip End " + dt.Rows[j]["gps_time"]);
+                            insertTrip = false;
                         }
                     }
                 }
@@ -162,8 +177,8 @@ namespace tranDataSchedule
                 {
 
                 }
-                lB1.Items.Add(dtCar.Rows[i]["car_id"].ToString() + " ระยะทาง " + tdsC.sql.SumDistanceOfDate(dateStart, dtCar.Rows[i]["imei"].ToString(), txtConnGPS01.Text) + " จำนวนรับผู้โดยสาร " + day2[0] + " รายได้ " + day2[1] + " ระยะทางรับผู้โดยสาร " + day2[2]);
-                lB1.Refresh();
+                lB1.Items.Add(dtCar.Rows[i]["car_id"].ToString()+"["+ dtCar.Rows[i]["imei"].ToString() + "] ระยะทาง " + tdsC.sql.SumDistanceOfDate(dateStart, dtCar.Rows[i]["imei"].ToString(), txtConnGPS01.Text) + " จำนวนรับผู้โดยสาร " + day2[0] + " รายได้ " + day2[1] + " ระยะทางรับผู้โดยสาร " + day2[2]);
+                //lB1.Refresh();
                 pB1.Value = i;
             }
             connDaily.Close();
@@ -182,14 +197,14 @@ namespace tranDataSchedule
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            setTimeCurrent();
+            txtTimeCurrent.Text = tdsC.setTimeCurrent();
         }
 
         private void btnStart_Click(object sender, EventArgs e)
         {
-            txtTimeStart.Text = System.DateTime.Now.ToShortTimeString();
+            txtTimeStart.Text = tdsC.setTimeCurrent();
             selectCar(txtDateManual.Value.Year.ToString() + "-" + txtDateManual.Value.ToString("MM-dd"), txtDateManual.Value.Year.ToString() + "-" + txtDateManual.Value.ToString("MM-dd"));
-            txtTimeEnd.Text = System.DateTime.Now.ToShortTimeString();
+            txtTimeEnd.Text = tdsC.setTimeCurrent();
         }
     }
 }

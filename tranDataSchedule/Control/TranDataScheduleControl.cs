@@ -48,5 +48,9 @@ namespace tranDataSchedule.Control
             
             return km;
         }
+        public String setTimeCurrent()
+        {
+            return String.Format("{0:hhmm}", System.DateTime.Now);
+        }
     }
 }
