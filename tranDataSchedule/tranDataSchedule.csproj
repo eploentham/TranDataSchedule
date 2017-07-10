@@ -59,6 +59,7 @@
     <Compile Include="objdb\ConnectDB.cs" />
     <Compile Include="object1\Car.cs" />
     <Compile Include="object1\Persistent.cs" />
+    <Compile Include="object1\ReverseGeoLookup.cs" />
     <Compile Include="object1\SQL.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

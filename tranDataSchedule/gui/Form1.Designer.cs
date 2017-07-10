@@ -30,6 +30,8 @@
         {
             this.components = new System.ComponentModel.Container();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.txtGPSError = new System.Windows.Forms.NumericUpDown();
             this.label6 = new System.Windows.Forms.Label();
             this.txtTimeEnd = new System.Windows.Forms.MaskedTextBox();
             this.btnCheckData = new System.Windows.Forms.Button();
@@ -55,12 +57,10 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.txtConnDaily = new System.Windows.Forms.TextBox();
-            this.txtGPSError = new System.Windows.Forms.NumericUpDown();
-            this.label8 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.txtGPSError)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.gbManual.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.txtGPSError)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -79,6 +79,32 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "เงื่อนไข";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(527, 134);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(111, 13);
+            this.label8.TabIndex = 8;
+            this.label8.Text = "ค่าคลาดเคลื่อน จอดรถ";
+            // 
+            // txtGPSError
+            // 
+            this.txtGPSError.Location = new System.Drawing.Point(627, 150);
+            this.txtGPSError.Maximum = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+            this.txtGPSError.Name = "txtGPSError";
+            this.txtGPSError.Size = new System.Drawing.Size(65, 20);
+            this.txtGPSError.TabIndex = 7;
+            this.txtGPSError.Value = new decimal(new int[] {
+            7,
+            0,
+            0,
+            0});
             // 
             // label6
             // 
@@ -318,27 +344,6 @@
             this.txtConnDaily.Size = new System.Drawing.Size(510, 20);
             this.txtConnDaily.TabIndex = 9;
             // 
-            // txtGPSError
-            // 
-            this.txtGPSError.Location = new System.Drawing.Point(627, 150);
-            this.txtGPSError.Maximum = new decimal(new int[] {
-            20,
-            0,
-            0,
-            0});
-            this.txtGPSError.Name = "txtGPSError";
-            this.txtGPSError.Size = new System.Drawing.Size(65, 20);
-            this.txtGPSError.TabIndex = 7;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(527, 134);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(111, 13);
-            this.label8.TabIndex = 8;
-            this.label8.Text = "ค่าคลาดเคลื่อน จอดรถ";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -361,11 +366,11 @@
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.txtGPSError)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.gbManual.ResumeLayout(false);
             this.gbManual.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.txtGPSError)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

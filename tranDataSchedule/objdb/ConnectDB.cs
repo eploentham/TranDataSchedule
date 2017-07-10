@@ -14,7 +14,7 @@ namespace tranDataSchedule.objdb
         public String databaseDB01 = "gps_backup_01";
         public String hostDB = "localhost";
         public String userDB = "root";
-        public String passwordDB = "-";
+        public String passwordDB = "FGNEOB";
         public MySqlConnection connOnLine, conn01;
         public int _rowsAffected = 0;
         public ConnectDB()
