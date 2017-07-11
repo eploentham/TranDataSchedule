@@ -38,9 +38,9 @@ namespace tranDataSchedule
             timer1.Start();
             txtConGPSOnLIne.Text = tdsC.conn.connOnLine.ConnectionString;//server=localhost;database=gpsonline;user id=root;password=-;port=6318
             txtConnGPS01.Text = tdsC.conn.conn01.ConnectionString;
-            //txtConGPSOnLIne.Text = "server=localhost;database=gpsonline;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
-            //txtConnGPS01.Text = "server=localhost;database=gps_backup_01;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
-            //txtConnDaily.Text = "server=localhost;database=daily_report;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
+            txtConGPSOnLIne.Text = "server=localhost;database=gpsonline;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
+            txtConnGPS01.Text = "server=localhost;database=gps_backup_01;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
+            txtConnDaily.Text = "server=localhost;database=daily_report;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
         }
         private void showChkAuto()
         {
@@ -105,10 +105,10 @@ namespace tranDataSchedule
                 sqlTrip.Clear();
                 stripStart = false;
                 stripEnd = false;
-                //if (!dtCar.Rows[i]["imei"].ToString().Equals("58063983"))
-                //{
-                //    continue;
-                //}
+                if (!dtCar.Rows[i]["imei"].ToString().Equals("58063983"))
+                {
+                    continue;
+                }
                 //sqlTrip.Append("Select imei, gps_date, gps_time, gps_input1, gps_speed From positionbackup Where imei = '")
                 //    .Append(dtCar.Rows[i]["imei"].ToString()).Append("' and gps_ign = 1 and gps_date = '").Append(dateStart).Append("' Order By gps_time");
                 sqlTrip.Append("Select imei, gps_date_time, gps_date, gps_time, gps_input1, gps_speed, gps_lat, gps_lon From positionbackup Where imei = '")
