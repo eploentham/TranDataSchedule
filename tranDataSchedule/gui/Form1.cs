@@ -69,13 +69,11 @@ namespace tranDataSchedule
             DataTable dt = new DataTable();
             int rowStart = 0;
             
-
             Boolean stripStart = false;
             Boolean stripStartOld = false;
             Boolean stripEnd = false;
             Boolean insertTrip = false;
-
-
+            
             connDaily.ConnectionString = txtConnDaily.Text;
             conn01.ConnectionString = txtConnGPS01.Text;
             connDaily.Open();
@@ -84,7 +82,7 @@ namespace tranDataSchedule
             com01.Connection = conn01;
             MySqlDataAdapter adap01 = new MySqlDataAdapter(com01);
 
-            Double km = 0.0, distance = 0.0;
+            Double km = 0.0, distance = 0.0, distanceDay=0.0;
             pB1.Show();
             pB1.Visible = true;
             pB1.Minimum = 0;
@@ -99,7 +97,7 @@ namespace tranDataSchedule
 
             dtCar = tdsC.selectCarAll(txtConGPSOnLIne.Text);
             pB1.Maximum = dtCar.Rows.Count;
-            for (int i = 0; i < dtCar.Rows.Count; i++)
+            for (int i = 0; i < dtCar.Rows.Count; i++)// มีรถกี่คัน
             {
                 sql1.Clear();
                 sqlTrip.Clear();
@@ -113,14 +111,14 @@ namespace tranDataSchedule
                 //    .Append(dtCar.Rows[i]["imei"].ToString()).Append("' and gps_ign = 1 and gps_date = '").Append(dateStart).Append("' Order By gps_time");
                 sqlTrip.Append("Select imei, gps_date_time, gps_date, gps_time, gps_input1, gps_speed, gps_lat, gps_lon From positionbackup Where imei = '")
                     .Append(dtCar.Rows[i]["imei"].ToString()).Append("'  and gps_date = '").Append(dateStart).Append("' Order By gps_time");
-                com01.CommandText = sqlTrip.ToString();
+                com01.CommandText = sqlTrip.ToString();// ดึงรถตาม imei ดึงทั้งวัน
                 dt.Rows.Clear();
                 adap01.Fill(dt);
                 if (dt.Rows.Count > 0)
                 {
                     rowStart = 0;
                     distance = 0.0;
-                    for (int j = 0; j < dt.Rows.Count; j++)
+                    for (int j = 0; j < dt.Rows.Count; j++)// ดึงรถตาม imei ดึงทั้งวัน
                     {
                         if (j == 0) continue;
                         if (dt.Rows[j]["imei"].ToString().Equals("58063983"))// test bug, error
@@ -134,6 +132,11 @@ namespace tranDataSchedule
                                 sql = "";
                             }
                         }// test bug, error
+
+                        //คำนวณ ระยะทางทั้งหมด
+                        distanceDay += tdsC.sql.CalcDistanceKilo(Convert.ToDouble(dt.Rows[j - 1]["gps_lat"]) / 1000000, Convert.ToDouble(dt.Rows[j - 1]["gps_lon"]) / 1000000, Convert.ToDouble(dt.Rows[j]["gps_lat"]) / 1000000, Convert.ToDouble(dt.Rows[j]["gps_lon"]) / 1000000);
+
+                        // หา trip
                         if (((Boolean)dt.Rows[j]["gps_input1"] == true) && ((Boolean)dt.Rows[j-1]["gps_input1"] == false))//trip start 
                         {
                             if ((int)dt.Rows[j]["gps_speed"]>0)// กดmeter แล้วออกรถเลย
@@ -168,7 +171,7 @@ namespace tranDataSchedule
                         if(stripStart && stripEnd && insertTrip)
                         {
                             distance = 0.0;
-                            for (int k = rowStart; k < j; k++)
+                            for (int k = rowStart; k < j; k++)//คำนวณหา ระยะทาง ระหว่างtrip
                             {
                                 distance += tdsC.sql.CalcDistanceKilo(Convert.ToDouble(dt.Rows[k - 1]["gps_lat"]) / 1000000, Convert.ToDouble(dt.Rows[k - 1]["gps_lon"]) / 1000000, Convert.ToDouble(dt.Rows[k]["gps_lat"]) / 1000000, Convert.ToDouble(dt.Rows[k]["gps_lon"]) / 1000000);
                             }
@@ -225,8 +228,10 @@ namespace tranDataSchedule
                 {
 
                 }
-                                
-                lB1.Items.Add(dtCar.Rows[i]["car_id"].ToString()+"["+ dtCar.Rows[i]["imei"].ToString() + "] ระยะทาง " + tdsC.sql.SumDistanceOfDate(dateStart, dtCar.Rows[i]["imei"].ToString(), txtConnGPS01.Text) + " จำนวนรับผู้โดยสาร " + day2[0] + " รายได้ " + day2[1] + " ระยะทางรับผู้โดยสาร " + day2[2]);
+
+                lB1.Items.Add(dtCar.Rows[i]["car_id"].ToString()+"["+ dtCar.Rows[i]["imei"].ToString() + "] ระยะทาง " 
+                    + tdsC.sql.SumDistanceOfDate(dateStart, dtCar.Rows[i]["imei"].ToString(), txtConnGPS01.Text) + " จำนวนรับผู้โดยสาร " + day2[0] 
+                    + " รายได้ " + day2[1] + " ระยะทางรับผู้โดยสาร " + day2[2]+ " distanceDay " + distanceDay);
                 //lB1.Refresh();
                 pB1.Value = i;
             }
