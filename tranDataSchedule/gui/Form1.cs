@@ -67,7 +67,7 @@ namespace tranDataSchedule
             MySqlCommand comDaily = new MySqlCommand();
             MySqlCommand com01 = new MySqlCommand();
             DataTable dt = new DataTable();
-            int rowStart = 0;
+            int rowStart = 0, incomeTrip=0;
             
             Boolean stripStart = false;
             Boolean stripStartOld = false;
@@ -103,13 +103,18 @@ namespace tranDataSchedule
                 sqlTrip.Clear();
                 stripStart = false;
                 stripEnd = false;
-                if (!dtCar.Rows[i]["imei"].ToString().Equals("58063983"))
+                distanceDay = 0.0;
+                //if (!dtCar.Rows[i]["imei"].ToString().Equals("58063983"))
+                //{
+                //    continue;
+                //}
+                if (!dtCar.Rows[i]["imei"].ToString().Equals("56072558"))
                 {
                     continue;
                 }
                 //sqlTrip.Append("Select imei, gps_date, gps_time, gps_input1, gps_speed From positionbackup Where imei = '")
                 //    .Append(dtCar.Rows[i]["imei"].ToString()).Append("' and gps_ign = 1 and gps_date = '").Append(dateStart).Append("' Order By gps_time");
-                sqlTrip.Append("Select imei, gps_date_time, gps_date, gps_time, gps_input1, gps_speed, gps_lat, gps_lon From positionbackup Where imei = '")
+                sqlTrip.Append("Select imei, gps_date_time, gps_date, gps_time, gps_input1, gps_speed, gps_lat, gps_lon, packet_arrived_time From positionbackup Where imei = '")
                     .Append(dtCar.Rows[i]["imei"].ToString()).Append("'  and gps_date = '").Append(dateStart).Append("' Order By gps_time");
                 com01.CommandText = sqlTrip.ToString();// ดึงรถตาม imei ดึงทั้งวัน
                 dt.Rows.Clear();
@@ -121,7 +126,7 @@ namespace tranDataSchedule
                     for (int j = 0; j < dt.Rows.Count; j++)// ดึงรถตาม imei ดึงทั้งวัน
                     {
                         if (j == 0) continue;
-                        if (dt.Rows[j]["imei"].ToString().Equals("58063983"))// test bug, error
+                        if (dt.Rows[j]["imei"].ToString().Equals("56072558"))// test bug, error
                         {
                             if (dt.Rows[j]["gps_time"].ToString().Equals("09:37:22"))
                             {
@@ -132,6 +137,10 @@ namespace tranDataSchedule
                                 sql = "";
                             }
                         }// test bug, error
+                        if (j == 1)// รับ trip มาก่อนเที่ยงคืน
+                        {
+
+                        }
 
                         //คำนวณ ระยะทางทั้งหมด
                         distanceDay += tdsC.sql.CalcDistanceKilo(Convert.ToDouble(dt.Rows[j - 1]["gps_lat"]) / 1000000, Convert.ToDouble(dt.Rows[j - 1]["gps_lon"]) / 1000000, Convert.ToDouble(dt.Rows[j]["gps_lat"]) / 1000000, Convert.ToDouble(dt.Rows[j]["gps_lon"]) / 1000000);
@@ -171,20 +180,21 @@ namespace tranDataSchedule
                         if(stripStart && stripEnd && insertTrip)
                         {
                             distance = 0.0;
+                            incomeTrip = 0;
                             for (int k = rowStart; k < j; k++)//คำนวณหา ระยะทาง ระหว่างtrip
                             {
                                 distance += tdsC.sql.CalcDistanceKilo(Convert.ToDouble(dt.Rows[k - 1]["gps_lat"]) / 1000000, Convert.ToDouble(dt.Rows[k - 1]["gps_lon"]) / 1000000, Convert.ToDouble(dt.Rows[k]["gps_lat"]) / 1000000, Convert.ToDouble(dt.Rows[k]["gps_lon"]) / 1000000);
                             }
-
+                            incomeTrip = tdsC.sql.PriceDay1(distance);
                             //String aa = "", bb="", cc="", dd="", ee="", ff="", gg="",hh="",ii="";
                             //addr.Clear();     // google address
                             //addr.Append(geo.ReverseGeoLoc((Convert.ToDouble(dt.Rows[j]["gps_lon"]) / 1000000).ToString(), (Convert.ToDouble(dt.Rows[rowStart]["gps_lat"]) / 1000000).ToString(), out aa, out bb, out cc, out dd, out ee, out ff, out gg, out hh, out ii));
 
                             sql1.Clear();
                             sql1.Append("Insert Into taxi_meter(t_imei, t_start_time, t_start_gps_lat, t_start_gps_lon")
-                                .Append(", t_off_time, t_off_gps_lat, t_off_gps_lon, t_distance ) ")
+                                .Append(", t_off_time, t_off_gps_lat, t_off_gps_lon, t_distance, t_taxi_fare ) ")
                                 .Append("Values('").Append(dtCar.Rows[i]["imei"].ToString()).Append("','").Append(String.Format("{0:yyyy-MM-dd HH:mm:ss}", dt.Rows[rowStart]["gps_date_time"])).Append("','").Append(dt.Rows[rowStart]["gps_lat"].ToString()).Append("','").Append(dt.Rows[rowStart]["gps_lon"].ToString()).Append("'")
-                                .Append(",'").Append(String.Format("{0:yyyy-MM-dd HH:mm:ss}", dt.Rows[j]["gps_date_time"])).Append("','").Append(dt.Rows[j]["gps_lat"].ToString()).Append("','").Append(dt.Rows[j]["gps_lon"].ToString()).Append("',").Append(distance).Append(") ");
+                                .Append(",'").Append(String.Format("{0:yyyy-MM-dd HH:mm:ss}", dt.Rows[j]["gps_date_time"])).Append("','").Append(dt.Rows[j]["gps_lat"].ToString()).Append("','").Append(dt.Rows[j]["gps_lon"].ToString()).Append("',").Append(distance).Append(",").Append(incomeTrip).Append(") ");
                             comDaily.CommandText = sql1.ToString();
                             try
                             {

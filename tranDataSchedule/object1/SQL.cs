@@ -1587,5 +1587,57 @@ namespace tranDataSchedule.object1
             }
             return Convert.ToInt32(price);
         }
+        public int PriceDay1(double distance)//คำนวนค่าแท็กซื่
+        {
+            double b = 50.0, price = 0, p = 35.0;
+            if (distance < 2.19)
+            {
+                if (distance >= 1.10 && distance < 1.46) //++0.36
+                {
+                    price = 37;
+                }
+                else if (distance >= 1.46 && distance < 1.82) //++0.36
+                {
+                    price = 39;
+                }
+                else if (distance >= 1.82 && distance < 2.19) //++0.37
+                {
+                    price = 41;
+                }
+                else
+                {
+                    price = p;
+                }
+            }
+            else
+            {
+                if ((distance >= 2.19) && (distance <= 10.0))
+                {
+                    price = p + ((distance - 1) * 5.5);
+                }
+                else if ((distance > 10.0) && (distance <= 20.0))
+                {
+                    price = p + b + ((distance - 10) * 6.5);
+                }
+                else if ((distance > 20.0) && (distance <= 40.0))
+                {
+                    price = p + b + (10.0 * 6.50) + ((distance - 19) * 7.5);
+                }
+                else if ((distance > 40.0) && (distance <= 60.0))
+                {
+                    price = p + b + (10.0 * 6.50) + (20 * 7.5) + ((distance - 39) * 8.0);
+                }
+                else if ((distance > 60.0) && (distance <= 80.0))
+                {
+                    price = p + b + (10.0 * 6.50) + (20 * 7.5) + (20.0 * 8.0) + ((distance - 59) * 9.0);
+                }
+                else if (distance > 80.0)
+                {
+                    price = p + b + (10.0 * 6.50) + (20 * 7.5) + (20.0 * 8.0) + (20.0 * 9.0) + ((distance - 79) * 10.5);
+
+                }
+            }
+            return Convert.ToInt32(price);
+        }
     }
 }
