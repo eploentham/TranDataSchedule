@@ -291,9 +291,9 @@
             // lB1
             // 
             this.lB1.FormattingEnabled = true;
-            this.lB1.Location = new System.Drawing.Point(719, 13);
+            this.lB1.Location = new System.Drawing.Point(12, 557);
             this.lB1.Name = "lB1";
-            this.lB1.Size = new System.Drawing.Size(543, 537);
+            this.lB1.Size = new System.Drawing.Size(1091, 199);
             this.lB1.TabIndex = 4;
             // 
             // txtConGPSOnLIne
@@ -348,7 +348,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1269, 564);
+            this.ClientSize = new System.Drawing.Size(1269, 767);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.txtConnDaily);
             this.Controls.Add(this.label5);
