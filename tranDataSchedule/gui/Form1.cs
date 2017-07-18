@@ -39,10 +39,11 @@ namespace tranDataSchedule
             txtConGPSOnLIne.Text = tdsC.conn.connOnLine.ConnectionString;//server=localhost;database=gpsonline;user id=root;password=-;port=6318
             txtConnGPS01.Text = tdsC.conn.conn01.ConnectionString;
             txtConnDaily.Text = tdsC.conn.connOnLine.ConnectionString.Replace("gpsonline","daily_report");
+
             //txtConGPSOnLIne.Text = "server=localhost;database=gpsonline;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
             //txtConnGPS01.Text = "server=localhost;database=gps_backup_01;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
             //txtConnDaily.Text = "server=localhost;database=daily_report;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
-            this.Text = "Last Update 17-07-2560";
+            this.Text = "Last Update 18-07-2560";
         }
         private void showChkAuto()
         {
@@ -97,8 +98,9 @@ namespace tranDataSchedule
             lB1.Items.Add("ตรวจสอบข้อมูล");
 
             lB1.Items.Add("ประจำวันที่ " + dateStart + " ถึงวันที่ " + dateEnd);
-
+            //MessageBox.Show("bck " );
             dtCar = tdsC.selectCarAll(txtConGPSOnLIne.Text);
+            //MessageBox.Show("bck 111");
             pB1.Maximum = dtCar.Rows.Count;
             for (int i = 0; i < dtCar.Rows.Count; i++)// มีรถกี่คัน
             {
@@ -129,9 +131,21 @@ namespace tranDataSchedule
                 {
                     conn01.Close();
                 }
-                conn01.ConnectionString = "Server=" + tdsC.conn.hostDB + ";Database=gps_backup_" + bck.ToString() + ";Uid=" + tdsC.conn.userDB + ";Pwd=" + tdsC.conn.passwordDB + ";port = 6318";
+
+                try
+                {
+                    //MessageBox.Show("bck 22");
+                    conn01.ConnectionString = "Server=" + tdsC.conn.hostDB + ";Database=gps_backup_" + bck.ToString() + ";Uid=" + tdsC.conn.userDB + ";Pwd=" + tdsC.conn.passwordDB + ";port = 6318";
+                    conn01.Open();
+                    //MessageBox.Show("bck 2222");
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show("bck "+bck.ToString()+" error "+ex.Message.ToString());
+                }
+                
                 //conn01.ConnectionString = txtConnGPS01.Text;
-                conn01.Open();
+                
                 //sqlTrip.Append("Select imei, gps_date, gps_time, gps_input1, gps_speed From positionbackup Where imei = '")
                 //    .Append(dtCar.Rows[i]["imei"].ToString()).Append("' and gps_ign = 1 and gps_date = '").Append(dateStart).Append("' Order By gps_time");
                 sqlTrip.Append("Select imei, gps_date_time, gps_date, gps_time, gps_input1, gps_speed, gps_lat, gps_lon, packet_arrived_time From positionbackup Where imei = '")
@@ -160,6 +174,7 @@ namespace tranDataSchedule
                                 {
                                     sql = "";
                                 }
+                                err = "1001";
                             }// test bug, error
                             if (j == 1)// รับ trip มาก่อนเที่ยงคืน
                             {
@@ -183,6 +198,7 @@ namespace tranDataSchedule
                                     rowStart = j;
                                     //lB1.Items.Add("Trip Start "+ dt.Rows[j]["gps_time"]);
                                 }
+                                err = "2001";
                                 if (((int)dt.Rows[j]["gps_speed"] == 0) && ((int)dt.Rows[j + 1]["gps_speed"] > 0))// กดmeter แล้วยังไม่ออกรถทันที
                                 {
                                     stripStart = true;
@@ -220,6 +236,7 @@ namespace tranDataSchedule
                                 {
                                     distance += tdsC.sql.CalcDistanceKilo(Convert.ToDouble(dt.Rows[k - 1]["gps_lat"]) / 1000000, Convert.ToDouble(dt.Rows[k - 1]["gps_lon"]) / 1000000, Convert.ToDouble(dt.Rows[k]["gps_lat"]) / 1000000, Convert.ToDouble(dt.Rows[k]["gps_lon"]) / 1000000);
                                 }
+                                err = "4002";
                                 incomeTrip = tdsC.sql.PriceDay1(distance);
                                 distanceTripSum += distance;
                                 //String aa = "", bb="", cc="", dd="", ee="", ff="", gg="",hh="",ii="";
@@ -227,13 +244,15 @@ namespace tranDataSchedule
                                 //addr.Append(geo.ReverseGeoLoc((Convert.ToDouble(dt.Rows[j]["gps_lon"]) / 1000000).ToString(), (Convert.ToDouble(dt.Rows[rowStart]["gps_lat"]) / 1000000).ToString(), out aa, out bb, out cc, out dd, out ee, out ff, out gg, out hh, out ii));
                                 err = "5000";
                                 sql1.Clear();
-                                sql1.Append("Insert Into taxi_meter(t_imei, t_start_time, t_start_gps_lat, t_start_gps_lon")
+                                
+                                try
+                                {
+                                    sql1.Append("Insert Into taxi_meter(t_imei, t_start_time, t_start_gps_lat, t_start_gps_lon")
                                     .Append(", t_off_time, t_off_gps_lat, t_off_gps_lon, t_distance, t_taxi_fare ) ")
                                     .Append("Values('").Append(dtCar.Rows[i]["imei"].ToString()).Append("','").Append(String.Format("{0:yyyy-MM-dd HH:mm:ss}", dt.Rows[rowStart]["gps_date_time"])).Append("','").Append(dt.Rows[rowStart]["gps_lat"].ToString()).Append("','").Append(dt.Rows[rowStart]["gps_lon"].ToString()).Append("'")
                                     .Append(",'").Append(String.Format("{0:yyyy-MM-dd HH:mm:ss}", dt.Rows[j]["gps_date_time"])).Append("','").Append(dt.Rows[j]["gps_lat"].ToString()).Append("','").Append(dt.Rows[j]["gps_lon"].ToString()).Append("',").Append(distance).Append(",").Append(incomeTrip).Append(") ");
-                                comDaily.CommandText = sql1.ToString();
-                                try
-                                {
+                                    comDaily.CommandText = sql1.ToString();
+
                                     comDaily.ExecuteNonQuery();
                                     stripStart = false;
                                 }
@@ -252,7 +271,8 @@ namespace tranDataSchedule
                         }
                         catch(Exception ex)
                         {
-                            MessageBox.Show("Error "+err+"\n" + ex.Message.ToString());
+                            //MessageBox.Show("Error "+err+" row "+i+"\n" + ex.Message.ToString());
+                            lB1.Items.Add(ex.Message.ToString());
                         }
                         
                     }
@@ -262,16 +282,23 @@ namespace tranDataSchedule
                 //km = tdsC.sql.SumDistanceOfDate(dateStart, dtCar.Rows[i]["imei"].ToString(), txtConnGPS01.Text);
                 //    km = tdsC.sql.SumDistanceOfDate(dateStart, dtCar.Rows[i]["imei"].ToString(), txtConGPSOnLIne.Text);
                 //day2 = tdsC.sql.SubAvgOfDay2(dateStart, dtCar.Rows[i]["imei"].ToString(), tdsC.conn.conn01.ConnectionString);
-                day2 = tdsC.sql.SubAvgOfDay2(dateStart, dtCar.Rows[i]["imei"].ToString(), txtConnGPS01.Text);
+                
+                //conn01.ConnectionString = "Server=" + tdsC.conn.hostDB + ";Database=gps_backup_" + bck.ToString() + ";Uid=" + tdsC.conn.userDB + ";Pwd=" + tdsC.conn.passwordDB + ";port = 6318";
+                //MessageBox.Show("bck 33 " + "Server=" + tdsC.conn.hostDB + ";Database=gps_backup_" + bck.ToString() + ";Uid=" + tdsC.conn.userDB + ";Pwd=" + tdsC.conn.passwordDB + ";port = 6318");
+                day2 = tdsC.sql.SubAvgOfDay2(dateStart, dtCar.Rows[i]["imei"].ToString(), "Server=" + tdsC.conn.hostDB + ";Database=gps_backup_" + bck.ToString() + ";Uid=" + tdsC.conn.userDB + ";Pwd=" + tdsC.conn.passwordDB + ";port = 6318");
+                //MessageBox.Show("bck 3333");
                 sql1.Clear();
-                sql1.Append("Insert Into car_daily(car_daily_id, car_id, imei, daily_date, distance, income, trip_cnt, trip_distance) ")
-                .Append("Values(UUID()").Append(",'").Append(dtCar.Rows[i]["car_id"].ToString()).Append("','").Append(dtCar.Rows[i]["imei"].ToString())
-                .Append("','").Append(dateStart).Append("','").Append(tdsC.sql.SumDistanceOfDate(dateStart, dtCar.Rows[i]["imei"].ToString(), txtConnGPS01.Text))
-                .Append("',").Append(day2.ToString().Split(':')[1]).Append(",'").Append(day2.ToString().Split(':')[0]).Append("','").Append(day2.ToString().Split(':')[2]).Append("')");
-                comDaily.CommandText = sql1.ToString();
+                
                 try
                 {
+                    sql1.Append("Insert Into car_daily(car_daily_id, car_id, imei, daily_date, distance, income, trip_cnt, trip_distance) ")
+                    .Append("Values(UUID()").Append(",'").Append(dtCar.Rows[i]["car_id"].ToString()).Append("','").Append(dtCar.Rows[i]["imei"].ToString())
+                    .Append("','").Append(dateStart).Append("','").Append(tdsC.sql.SumDistanceOfDate(dateStart, dtCar.Rows[i]["imei"].ToString(), txtConnGPS01.Text))
+                    .Append("',").Append(day2.ToString().Split(':')[1]).Append(",'").Append(day2.ToString().Split(':')[0]).Append("','").Append(day2.ToString().Split(':')[2]).Append("')");
+                    comDaily.CommandText = sql1.ToString();
+
                     comDaily.ExecuteNonQuery();
+                    //this.Invalidate();
                 }
                 catch (Exception ex)
                 {
@@ -288,6 +315,8 @@ namespace tranDataSchedule
                 //lB1.Refresh();
                 pB1.Value = i;
                 conn01.Close();
+                this.Refresh();
+                
             }
             connDaily.Close();
             pB1.Visible = false;
