@@ -21,8 +21,8 @@ namespace tranDataSchedule.objdb
         {
             connOnLine = new MySql.Data.MySqlClient.MySqlConnection();
             conn01 = new MySql.Data.MySqlClient.MySqlConnection();
-            connOnLine.ConnectionString = "Server=" + hostDB + ";Database=" + databaseDB + ";Uid=" + userDB + ";Pwd=" + passwordDB + ";port = 6318";
-            conn01.ConnectionString = "Server=" + hostDB + ";Database=" + databaseDB01 + ";Uid=" + userDB + ";Pwd=" + passwordDB + ";port = 6318";
+            connOnLine.ConnectionString = "Server=" + hostDB + ";Database=" + databaseDB + ";Uid=" + userDB + ";Pwd=" + passwordDB + ";port = 6318;Connection Timeout = 300;default command timeout=0;";
+            conn01.ConnectionString = "Server=" + hostDB + ";Database=" + databaseDB01 + ";Uid=" + userDB + ";Pwd=" + passwordDB + ";port = 6318;Connection Timeout = 300;default command timeout=0;";
 
         }
         public DataTable selectData(String sql)

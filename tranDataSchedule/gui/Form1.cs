@@ -71,7 +71,7 @@ namespace tranDataSchedule
             MySqlCommand comDaily = new MySqlCommand();
             MySqlCommand com01 = new MySqlCommand();
             DataTable dt = new DataTable();
-            int rowStart = 0, incomeTrip=0;
+            int rowStart = 0, incomeTrip=0, incomeTripSum=0, TripCnt=0;
             
             Boolean stripStart = false;
             Boolean stripStartOld = false;
@@ -110,6 +110,8 @@ namespace tranDataSchedule
                 stripEnd = false;
                 distanceDay = 0.0;
                 distanceTripSum = 0.0;
+                incomeTripSum = 0;
+                TripCnt = 0;
                 //if (!dtCar.Rows[i]["imei"].ToString().Equals("58063983"))
                 //{
                 //    continue;
@@ -135,7 +137,7 @@ namespace tranDataSchedule
                 try
                 {
                     //MessageBox.Show("bck 22");
-                    conn01.ConnectionString = "Server=" + tdsC.conn.hostDB + ";Database=gps_backup_" + bck.ToString() + ";Uid=" + tdsC.conn.userDB + ";Pwd=" + tdsC.conn.passwordDB + ";port = 6318";
+                    conn01.ConnectionString = "Server=" + tdsC.conn.hostDB + ";Database=gps_backup_" + bck.ToString() + ";Uid=" + tdsC.conn.userDB + ";Pwd=" + tdsC.conn.passwordDB + ";port = 6318;Connection Timeout = 300;default command timeout=0;";
                     conn01.Open();
                     //MessageBox.Show("bck 2222");
                 }
@@ -232,6 +234,7 @@ namespace tranDataSchedule
                             {
                                 distance = 0.0;
                                 incomeTrip = 0;
+                                
                                 for (int k = rowStart; k < j; k++)//คำนวณหา ระยะทาง ระหว่างtrip
                                 {
                                     distance += tdsC.sql.CalcDistanceKilo(Convert.ToDouble(dt.Rows[k - 1]["gps_lat"]) / 1000000, Convert.ToDouble(dt.Rows[k - 1]["gps_lon"]) / 1000000, Convert.ToDouble(dt.Rows[k]["gps_lat"]) / 1000000, Convert.ToDouble(dt.Rows[k]["gps_lon"]) / 1000000);
@@ -239,6 +242,8 @@ namespace tranDataSchedule
                                 err = "4002";
                                 incomeTrip = tdsC.sql.PriceDay1(distance);
                                 distanceTripSum += distance;
+                                incomeTripSum += incomeTrip;
+                                TripCnt++;
                                 //String aa = "", bb="", cc="", dd="", ee="", ff="", gg="",hh="",ii="";
                                 //addr.Clear();     // google address
                                 //addr.Append(geo.ReverseGeoLoc((Convert.ToDouble(dt.Rows[j]["gps_lon"]) / 1000000).ToString(), (Convert.ToDouble(dt.Rows[rowStart]["gps_lat"]) / 1000000).ToString(), out aa, out bb, out cc, out dd, out ee, out ff, out gg, out hh, out ii));
@@ -285,7 +290,7 @@ namespace tranDataSchedule
                 
                 //conn01.ConnectionString = "Server=" + tdsC.conn.hostDB + ";Database=gps_backup_" + bck.ToString() + ";Uid=" + tdsC.conn.userDB + ";Pwd=" + tdsC.conn.passwordDB + ";port = 6318";
                 //MessageBox.Show("bck 33 " + "Server=" + tdsC.conn.hostDB + ";Database=gps_backup_" + bck.ToString() + ";Uid=" + tdsC.conn.userDB + ";Pwd=" + tdsC.conn.passwordDB + ";port = 6318");
-                day2 = tdsC.sql.SubAvgOfDay2(dateStart, dtCar.Rows[i]["imei"].ToString(), "Server=" + tdsC.conn.hostDB + ";Database=gps_backup_" + bck.ToString() + ";Uid=" + tdsC.conn.userDB + ";Pwd=" + tdsC.conn.passwordDB + ";port = 6318");
+                //day2 = tdsC.sql.SubAvgOfDay2(dateStart, dtCar.Rows[i]["imei"].ToString(), "Server=" + tdsC.conn.hostDB + ";Database=gps_backup_" + bck.ToString() + ";Uid=" + tdsC.conn.userDB + ";Pwd=" + tdsC.conn.passwordDB + ";port = 6318");
                 //MessageBox.Show("bck 3333");
                 sql1.Clear();
                 
@@ -293,8 +298,8 @@ namespace tranDataSchedule
                 {
                     sql1.Append("Insert Into car_daily(car_daily_id, car_id, imei, daily_date, distance, income, trip_cnt, trip_distance) ")
                     .Append("Values(UUID()").Append(",'").Append(dtCar.Rows[i]["car_id"].ToString()).Append("','").Append(dtCar.Rows[i]["imei"].ToString())
-                    .Append("','").Append(dateStart).Append("','").Append(tdsC.sql.SumDistanceOfDate(dateStart, dtCar.Rows[i]["imei"].ToString(), txtConnGPS01.Text))
-                    .Append("',").Append(day2.ToString().Split(':')[1]).Append(",'").Append(day2.ToString().Split(':')[0]).Append("','").Append(day2.ToString().Split(':')[2]).Append("')");
+                    .Append("','").Append(dateStart).Append("','").Append(distanceDay)
+                    .Append("',").Append(incomeTripSum).Append(",'").Append(TripCnt).Append("','").Append(distanceTripSum).Append("')");
                     comDaily.CommandText = sql1.ToString();
 
                     comDaily.ExecuteNonQuery();
@@ -309,9 +314,12 @@ namespace tranDataSchedule
 
                 }
 
-                lB1.Items.Add(dtCar.Rows[i]["car_id"].ToString()+"["+ dtCar.Rows[i]["imei"].ToString() + "] ระยะทาง " 
-                    + tdsC.sql.SumDistanceOfDate(dateStart, dtCar.Rows[i]["imei"].ToString(), txtConnGPS01.Text) + " จำนวนรับผู้โดยสาร " + day2[0] 
-                    + " รายได้ " + day2[1] + " ระยะทางรับผู้โดยสาร " + day2[2]+ " distanceDay " + distanceDay+" distanceTripSum "+distanceTripSum);
+                //lB1.Items.Add(dtCar.Rows[i]["car_id"].ToString()+"["+ dtCar.Rows[i]["imei"].ToString() + "] ระยะทาง " 
+                //    + tdsC.sql.SumDistanceOfDate(dateStart, dtCar.Rows[i]["imei"].ToString(), txtConnGPS01.Text) + " จำนวนรับผู้โดยสาร " + day2[0] 
+                //    + " รายได้ " + day2[1] + " ระยะทางรับผู้โดยสาร " + day2[2]+ " distanceDay " + distanceDay+" distanceTripSum "+distanceTripSum);
+                lB1.Items.Add(dtCar.Rows[i]["car_id"].ToString() + "[" + dtCar.Rows[i]["imei"].ToString() + "] ระยะทาง "
+                    + distanceDay + " จำนวนรับผู้โดยสาร " + TripCnt
+                    + " รายได้ " + incomeTripSum + " ระยะทางรับผู้โดยสาร " + distanceTripSum + " distanceDay " + distanceDay );
                 //lB1.Refresh();
                 pB1.Value = i;
                 conn01.Close();
