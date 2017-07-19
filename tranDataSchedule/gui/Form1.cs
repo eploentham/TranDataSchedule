@@ -351,14 +351,10 @@ namespace tranDataSchedule
             txtTimeCurrent.Text = tdsC.setTimeCurrent();
             if (txtTimeCurrent.Text.Equals(txtAutoStart.Text))
             {
-<<<<<<< HEAD
                 txtTimeStart.Text = tdsC.setTimeCurrent();
-                selectCar(System.DateTime.Now.Year.ToString() + "-" + System.DateTime.Now.ToString("MM-dd"), System.DateTime.Now.Year.ToString() + "-" + System.DateTime.Now.ToString("MM-dd"));
-                txtTimeEnd.Text = tdsC.setTimeCurrent();
-=======
                 DateTime startDate = Convert.ToDateTime(System.DateTime.Now).AddDays(-1);
                 selectCar(startDate.Year.ToString() + "-" + startDate.ToString("MM-dd"), startDate.Year.ToString() + "-" + startDate.ToString("MM-dd"));
->>>>>>> eb8d41bce4c1d177ef255794bad6d4941b7e34dd
+                txtTimeEnd.Text = tdsC.setTimeCurrent();
             }
         }
 
