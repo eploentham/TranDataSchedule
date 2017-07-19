@@ -1,0 +1,1 @@
+ALTER TABLE `car_daily` ADD `time_start` VARCHAR(255) NULL AFTER `trip_distance`, ADD `time_end` VARCHAR(255) NULL AFTER `time_start`, ADD `time_schedule` VARCHAR(255) NULL AFTER `time_end`, ADD `date_start` VARCHAR(255) NULL AFTER `time_schedule`;

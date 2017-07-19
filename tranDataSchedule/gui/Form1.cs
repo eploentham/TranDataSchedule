@@ -43,24 +43,28 @@ namespace tranDataSchedule
             //txtConGPSOnLIne.Text = "server=localhost;database=gpsonline;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
             //txtConnGPS01.Text = "server=localhost;database=gps_backup_01;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
             //txtConnDaily.Text = "server=localhost;database=daily_report;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
-            this.Text = "Last Update 18-07-2560";
+            this.Text = "Last Update 19-07-2560";
         }
         private void showChkAuto()
         {
             if (chkAuto.Checked)
             {
                 gbManual.Visible = false;
+                txtAutoStart.Visible = true;
+                label9.Visible = true;
             }
             else
             {
                 gbManual.Visible = true;
+                txtAutoStart.Visible = false;
+                label9.Visible = false;
             }
         }
         
         private void selectCar(String dateStart, String dateEnd)
         {
             //String dateStart = "", dateEnd = "";
-            String sql = "", carId="", day2="", err="";
+            String sql = "", carId="", day2="", err="", timeStart="", timeEnd="";
             StringBuilder sql1 = new StringBuilder();
             StringBuilder sqlTrip = new StringBuilder();
             StringBuilder addr = new StringBuilder();
@@ -112,6 +116,7 @@ namespace tranDataSchedule
                 distanceTripSum = 0.0;
                 incomeTripSum = 0;
                 TripCnt = 0;
+                timeStart = tdsC.setTimeCurrent();
                 //if (!dtCar.Rows[i]["imei"].ToString().Equals("58063983"))
                 //{
                 //    continue;
@@ -212,7 +217,7 @@ namespace tranDataSchedule
                             if (((Boolean)dt.Rows[j]["gps_input1"] == false) && ((Boolean)dt.Rows[j - 1]["gps_input1"] == true) && stripStart)//trip end จะคำนวรหา end trip ได้ต้อง stripStart = true ก่อน
                             /**
                             * การหาtrip end
-                            * จะมี ความคลาดเคลื่อน เนื่องจาก กดmeter หยุดแล้วแต่ รถยังมีความเร็ว แต่ความเร็วจะเป้น 0 ก็จะเป็นข้อมูลถัดไป
+                            * จะมี ความคลาดเคลื่อน เนื่องจาก กด meter หยุดแล้วแต่ รถยังมีความเร็ว แต่ความเร็วจะเป้น 0 ก็จะเป็นข้อมูลถัดไป
                             **/
                             {
                                 if ((int)dt.Rows[j]["gps_speed"] == 0)// รถจอด
@@ -260,6 +265,7 @@ namespace tranDataSchedule
 
                                     comDaily.ExecuteNonQuery();
                                     stripStart = false;
+                                    //throw ();
                                 }
                                 catch (Exception ex)
                                 {
@@ -296,10 +302,10 @@ namespace tranDataSchedule
                 
                 try
                 {
-                    sql1.Append("Insert Into car_daily(car_daily_id, car_id, imei, daily_date, distance, income, trip_cnt, trip_distance) ")
+                    sql1.Append("Insert Into car_daily(car_daily_id, car_id, imei, daily_date, distance, income, trip_cnt, trip_distance, time_start, time_end, time_schedule, date_start) ")
                     .Append("Values(UUID()").Append(",'").Append(dtCar.Rows[i]["car_id"].ToString()).Append("','").Append(dtCar.Rows[i]["imei"].ToString())
                     .Append("','").Append(dateStart).Append("','").Append(distanceDay)
-                    .Append("',").Append(incomeTripSum).Append(",'").Append(TripCnt).Append("','").Append(distanceTripSum).Append("')");
+                    .Append("',").Append(incomeTripSum).Append(",'").Append(TripCnt).Append("','").Append(distanceTripSum).Append("','").Append(timeStart).Append("','").Append(tdsC.setTimeCurrent()).Append("','").Append(txtAutoStart.Text).Append("', now())");
                     comDaily.CommandText = sql1.ToString();
 
                     comDaily.ExecuteNonQuery();
@@ -313,7 +319,7 @@ namespace tranDataSchedule
                 {
 
                 }
-
+                
                 //lB1.Items.Add(dtCar.Rows[i]["car_id"].ToString()+"["+ dtCar.Rows[i]["imei"].ToString() + "] ระยะทาง " 
                 //    + tdsC.sql.SumDistanceOfDate(dateStart, dtCar.Rows[i]["imei"].ToString(), txtConnGPS01.Text) + " จำนวนรับผู้โดยสาร " + day2[0] 
                 //    + " รายได้ " + day2[1] + " ระยะทางรับผู้โดยสาร " + day2[2]+ " distanceDay " + distanceDay+" distanceTripSum "+distanceTripSum);
@@ -343,11 +349,17 @@ namespace tranDataSchedule
         private void timer1_Tick(object sender, EventArgs e)
         {
             txtTimeCurrent.Text = tdsC.setTimeCurrent();
+            if (txtTimeCurrent.Text.Equals(txtAutoStart.Text))
+            {
+                selectCar(System.DateTime.Now.Year.ToString() + "-" + System.DateTime.Now.ToString("MM-dd"), System.DateTime.Now.Year.ToString() + "-" + System.DateTime.Now.ToString("MM-dd"));
+            }
         }
 
         private void btnStart_Click(object sender, EventArgs e)
         {
             txtTimeStart.Text = tdsC.setTimeCurrent();
+            //String aaa = System.DateTime.Now.Year.ToString() + "-" + System.DateTime.Now.ToString("MM-dd");
+            //aaa = "aa";
             selectCar(txtDateManual.Value.Year.ToString() + "-" + txtDateManual.Value.ToString("MM-dd"), txtDateManual.Value.Year.ToString() + "-" + txtDateManual.Value.ToString("MM-dd"));
             txtTimeEnd.Text = tdsC.setTimeCurrent();
         }

@@ -57,6 +57,8 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.txtConnDaily = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.txtAutoStart = new System.Windows.Forms.MaskedTextBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtGPSError)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -72,10 +74,12 @@
             this.groupBox1.Controls.Add(this.btnCheckData);
             this.groupBox1.Controls.Add(this.groupBox2);
             this.groupBox1.Controls.Add(this.label2);
+            this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.txtTimeStart);
+            this.groupBox1.Controls.Add(this.txtTimeCurrent);
             this.groupBox1.Location = new System.Drawing.Point(13, 13);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(700, 343);
+            this.groupBox1.Size = new System.Drawing.Size(1090, 343);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "เงื่อนไข";
@@ -83,7 +87,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(527, 134);
+            this.label8.Location = new System.Drawing.Point(527, 199);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(111, 13);
             this.label8.TabIndex = 8;
@@ -91,7 +95,7 @@
             // 
             // txtGPSError
             // 
-            this.txtGPSError.Location = new System.Drawing.Point(627, 150);
+            this.txtGPSError.Location = new System.Drawing.Point(653, 197);
             this.txtGPSError.Maximum = new decimal(new int[] {
             20,
             0,
@@ -137,6 +141,8 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.label9);
+            this.groupBox2.Controls.Add(this.txtAutoStart);
             this.groupBox2.Controls.Add(this.gbManual);
             this.groupBox2.Controls.Add(this.chkManual);
             this.groupBox2.Controls.Add(this.chkAuto);
@@ -258,18 +264,18 @@
             // 
             // pB1
             // 
-            this.pB1.Location = new System.Drawing.Point(12, 528);
+            this.pB1.Location = new System.Drawing.Point(12, 460);
             this.pB1.Name = "pB1";
-            this.pB1.Size = new System.Drawing.Size(701, 23);
+            this.pB1.Size = new System.Drawing.Size(1091, 23);
             this.pB1.TabIndex = 1;
             // 
             // txtTimeCurrent
             // 
             this.txtTimeCurrent.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(222)));
-            this.txtTimeCurrent.Location = new System.Drawing.Point(654, 493);
+            this.txtTimeCurrent.Location = new System.Drawing.Point(627, 102);
             this.txtTimeCurrent.Mask = "00:00";
             this.txtTimeCurrent.Name = "txtTimeCurrent";
-            this.txtTimeCurrent.Size = new System.Drawing.Size(59, 29);
+            this.txtTimeCurrent.Size = new System.Drawing.Size(65, 29);
             this.txtTimeCurrent.TabIndex = 2;
             this.txtTimeCurrent.ValidatingType = typeof(System.DateTime);
             // 
@@ -282,7 +288,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(222)));
-            this.label1.Location = new System.Drawing.Point(570, 502);
+            this.label1.Location = new System.Drawing.Point(527, 111);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(61, 16);
             this.label1.TabIndex = 3;
@@ -291,7 +297,7 @@
             // lB1
             // 
             this.lB1.FormattingEnabled = true;
-            this.lB1.Location = new System.Drawing.Point(12, 557);
+            this.lB1.Location = new System.Drawing.Point(13, 489);
             this.lB1.Name = "lB1";
             this.lB1.Size = new System.Drawing.Size(1091, 199);
             this.lB1.TabIndex = 4;
@@ -300,14 +306,14 @@
             // 
             this.txtConGPSOnLIne.Location = new System.Drawing.Point(203, 366);
             this.txtConGPSOnLIne.Name = "txtConGPSOnLIne";
-            this.txtConGPSOnLIne.Size = new System.Drawing.Size(510, 20);
+            this.txtConGPSOnLIne.Size = new System.Drawing.Size(900, 20);
             this.txtConGPSOnLIne.TabIndex = 5;
             // 
             // txtConnGPS01
             // 
             this.txtConnGPS01.Location = new System.Drawing.Point(203, 393);
             this.txtConnGPS01.Name = "txtConnGPS01";
-            this.txtConnGPS01.Size = new System.Drawing.Size(510, 20);
+            this.txtConnGPS01.Size = new System.Drawing.Size(900, 20);
             this.txtConnGPS01.TabIndex = 6;
             // 
             // label4
@@ -341,14 +347,34 @@
             // 
             this.txtConnDaily.Location = new System.Drawing.Point(203, 434);
             this.txtConnDaily.Name = "txtConnDaily";
-            this.txtConnDaily.Size = new System.Drawing.Size(510, 20);
+            this.txtConnDaily.Size = new System.Drawing.Size(900, 20);
             this.txtConnDaily.TabIndex = 9;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(222)));
+            this.label9.Location = new System.Drawing.Point(177, 25);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(67, 16);
+            this.label9.TabIndex = 5;
+            this.label9.Text = "เวลาดึงข้อมูล";
+            // 
+            // txtAutoStart
+            // 
+            this.txtAutoStart.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(222)));
+            this.txtAutoStart.Location = new System.Drawing.Point(277, 16);
+            this.txtAutoStart.Mask = "00:00";
+            this.txtAutoStart.Name = "txtAutoStart";
+            this.txtAutoStart.Size = new System.Drawing.Size(65, 29);
+            this.txtAutoStart.TabIndex = 4;
+            this.txtAutoStart.ValidatingType = typeof(System.DateTime);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1269, 767);
+            this.ClientSize = new System.Drawing.Size(1120, 704);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.txtConnDaily);
             this.Controls.Add(this.label5);
@@ -356,8 +382,6 @@
             this.Controls.Add(this.txtConnGPS01);
             this.Controls.Add(this.txtConGPSOnLIne);
             this.Controls.Add(this.lB1);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.txtTimeCurrent);
             this.Controls.Add(this.pB1);
             this.Controls.Add(this.groupBox1);
             this.Name = "Form1";
@@ -406,6 +430,8 @@
         private System.Windows.Forms.TextBox txtConnDaily;
         private System.Windows.Forms.NumericUpDown txtGPSError;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.MaskedTextBox txtAutoStart;
     }
 }
 
