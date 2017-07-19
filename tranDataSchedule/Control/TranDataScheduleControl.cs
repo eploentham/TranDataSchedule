@@ -55,7 +55,7 @@ namespace tranDataSchedule.Control
         }
         public String setTimeCurrent()
         {
-            return String.Format("{0:hhmm}", System.DateTime.Now);
+            return String.Format("{0:HHmm}", System.DateTime.Now);
         }
     }
 }
