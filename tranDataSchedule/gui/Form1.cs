@@ -10,7 +10,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using tranDataSchedule.Control;
 using tranDataSchedule.object1;
-
+/**
+ * 2017-07-21
+ * 1. bug date taxi_meter ลงผิด format ลงเป็น 2560
+ */
 namespace tranDataSchedule
 {
     public partial class Form1 : Form
@@ -43,7 +46,7 @@ namespace tranDataSchedule
             //txtConGPSOnLIne.Text = "server=localhost;database=gpsonline;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
             //txtConnGPS01.Text = "server=localhost;database=gps_backup_01;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
             //txtConnDaily.Text = "server=localhost;database=daily_report;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
-            this.Text = "Last Update 19-07-2560";
+            this.Text = "Last Update 21-07-2560 1. bug date taxi_meter ลงผิด format ลงเป็น 2560";
         }
         private void showChkAuto()
         {
@@ -69,6 +72,8 @@ namespace tranDataSchedule
             StringBuilder sqlTrip = new StringBuilder();
             StringBuilder addr = new StringBuilder();
             StringBuilder bck = new StringBuilder();
+            StringBuilder dtS = new StringBuilder();
+            StringBuilder dtE = new StringBuilder();
             DataTable dtCar = new DataTable();
             MySqlConnection connDaily = new MySqlConnection();
             MySqlConnection conn01 = new MySqlConnection();
@@ -91,6 +96,7 @@ namespace tranDataSchedule
             MySqlDataAdapter adap01 = new MySqlDataAdapter(com01);
 
             Double km = 0.0, distance = 0.0, distanceDay=0.0, distanceTripSum=0.0;
+            DateTime dtStart, dtEnd;
             pB1.Show();
             pB1.Visible = true;
             pB1.Minimum = 0;
@@ -138,7 +144,8 @@ namespace tranDataSchedule
                 {
                     conn01.Close();
                 }
-
+                //bck.Clear();      //for test debug
+                //bck.Append("01"); //for test debug
                 try
                 {
                     //MessageBox.Show("bck 22");
@@ -257,10 +264,24 @@ namespace tranDataSchedule
                                 
                                 try
                                 {
+                                    dtStart = (DateTime)dt.Rows[rowStart]["gps_date_time"];     // +1.
+                                    dtS.Clear();// +1.
+                                    dtS.Append(dtStart.Year + "-" + dtStart.ToString("MM-dd HH:mm:ss"));// +1.
+                                    dtEnd = (DateTime)dt.Rows[j]["gps_date_time"];      // +1.
+                                    dtE.Clear();// +1.
+                                    dtE.Append(dtEnd.Year + "-" + dtEnd.ToString("MM-dd HH:mm:ss"));// +1.
+                                    //sql1.Append("Insert Into taxi_meter(t_imei, t_start_time, t_start_gps_lat, t_start_gps_lon")
+                                    //.Append(", t_off_time, t_off_gps_lat, t_off_gps_lon, t_distance, t_taxi_fare ) ")
+                                    //.Append("Values('").Append(dtCar.Rows[i]["imei"].ToString()).Append("','").Append(String.Format("{0:yyyy-MM-dd HH:mm:ss}", dt.Rows[rowStart]["gps_date_time"])).Append("','").Append(dt.Rows[rowStart]["gps_lat"].ToString()).Append("','").Append(dt.Rows[rowStart]["gps_lon"].ToString()).Append("'")
+                                    //.Append(",'").Append(String.Format("{0:yyyy-MM-dd HH:mm:ss}", dt.Rows[j]["gps_date_time"])).Append("','")
+                                    //.Append(dt.Rows[j]["gps_lat"].ToString()).Append("','").Append(dt.Rows[j]["gps_lon"].ToString()).Append("',")
+                                    //.Append(distance).Append(",").Append(incomeTrip).Append(") ");        // -1.
                                     sql1.Append("Insert Into taxi_meter(t_imei, t_start_time, t_start_gps_lat, t_start_gps_lon")
                                     .Append(", t_off_time, t_off_gps_lat, t_off_gps_lon, t_distance, t_taxi_fare ) ")
-                                    .Append("Values('").Append(dtCar.Rows[i]["imei"].ToString()).Append("','").Append(String.Format("{0:yyyy-MM-dd HH:mm:ss}", dt.Rows[rowStart]["gps_date_time"])).Append("','").Append(dt.Rows[rowStart]["gps_lat"].ToString()).Append("','").Append(dt.Rows[rowStart]["gps_lon"].ToString()).Append("'")
-                                    .Append(",'").Append(String.Format("{0:yyyy-MM-dd HH:mm:ss}", dt.Rows[j]["gps_date_time"])).Append("','").Append(dt.Rows[j]["gps_lat"].ToString()).Append("','").Append(dt.Rows[j]["gps_lon"].ToString()).Append("',").Append(distance).Append(",").Append(incomeTrip).Append(") ");
+                                    .Append("Values('").Append(dtCar.Rows[i]["imei"].ToString()).Append("','").Append(dtS.ToString()).Append("','").Append(dt.Rows[rowStart]["gps_lat"].ToString()).Append("','").Append(dt.Rows[rowStart]["gps_lon"].ToString()).Append("'")
+                                    .Append(",'").Append(dtE.ToString()).Append("','").Append(dt.Rows[j]["gps_lat"].ToString()).Append("','")
+                                    .Append(dt.Rows[j]["gps_lon"].ToString()).Append("',").Append(distance).Append(",")
+                                    .Append(incomeTrip).Append(") ");       // +1.
                                     comDaily.CommandText = sql1.ToString();
 
                                     comDaily.ExecuteNonQuery();
