@@ -13,6 +13,8 @@ using tranDataSchedule.object1;
 /**
  * 2017-07-21
  * 1. bug date taxi_meter ลงผิด format ลงเป็น 2560
+ * 2017-07-30
+ * 2. change connection to array
  */
 namespace tranDataSchedule
 {
@@ -46,7 +48,7 @@ namespace tranDataSchedule
             //txtConGPSOnLIne.Text = "server=localhost;database=gpsonline;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
             //txtConnGPS01.Text = "server=localhost;database=gps_backup_01;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
             //txtConnDaily.Text = "server=localhost;database=daily_report;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
-            this.Text = "Last Update 21-07-2560 1. bug date taxi_meter ลงผิด format ลงเป็น 2560";
+            this.Text = "Last Update 30-07-2560 1. bug date taxi_meter ลงผิด format ลงเป็น 2560";
         }
         private void showChkAuto()
         {
@@ -76,11 +78,12 @@ namespace tranDataSchedule
             StringBuilder dtE = new StringBuilder();
             DataTable dtCar = new DataTable();
             MySqlConnection connDaily = new MySqlConnection();
-            MySqlConnection conn01 = new MySqlConnection();
+            //MySqlConnection conn01 = new MySqlConnection();     //    -2
+            MySqlConnection[] conn01 = new MySqlConnection[100];     //    +2
             MySqlCommand comDaily = new MySqlCommand();
             MySqlCommand com01 = new MySqlCommand();
             DataTable dt = new DataTable();
-            int rowStart = 0, incomeTrip=0, incomeTripSum=0, TripCnt=0;
+            int rowStart = 0, incomeTrip=0, incomeTripSum=0, TripCnt=0, connBck=0;
             
             Boolean stripStart = false;
             Boolean stripStartOld = false;
@@ -88,11 +91,11 @@ namespace tranDataSchedule
             Boolean insertTrip = false;
             
             connDaily.ConnectionString = txtConnDaily.Text;
-            conn01.ConnectionString = txtConnGPS01.Text;
+            //conn01.ConnectionString = txtConnGPS01.Text;      //-2
             connDaily.Open();
             //conn01.Open();
             comDaily.Connection = connDaily;
-            com01.Connection = conn01;
+            //com01.Connection = conn01;        //-2
             MySqlDataAdapter adap01 = new MySqlDataAdapter(com01);
 
             Double km = 0.0, distance = 0.0, distanceDay=0.0, distanceTripSum=0.0;
@@ -140,23 +143,30 @@ namespace tranDataSchedule
                 {
                     bck.Append(dtCar.Rows[i]["bck_server_id"].ToString());
                 }
-                if (conn01.State==ConnectionState.Open)
-                {
-                    conn01.Close();
-                }
+                connBck = (int)dtCar.Rows[i]["bck_server_id"];      //  +2
+                //if (conn01.State==ConnectionState.Open)   //  -2
+                //{     //  -2
+                //    conn01.Close();       //  -2
+                //}     //  -2
                 //bck.Clear();      //for test debug
                 //bck.Append("01"); //for test debug
-                try
+                if ((conn01[connBck] == null) || (conn01[connBck].State == ConnectionState.Closed))       //  +2
                 {
-                    //MessageBox.Show("bck 22");
-                    conn01.ConnectionString = "Server=" + tdsC.conn.hostDB + ";Database=gps_backup_" + bck.ToString() + ";Uid=" + tdsC.conn.userDB + ";Pwd=" + tdsC.conn.passwordDB + ";port = 6318;Connection Timeout = 300;default command timeout=0;";
-                    conn01.Open();
-                    //MessageBox.Show("bck 2222");
+                    try
+                    {
+                        //MessageBox.Show("bck 22");
+                        conn01[connBck] = new MySqlConnection();
+                        conn01[connBck].ConnectionString = "Server=" + tdsC.conn.hostDB + ";Database=gps_backup_" + bck.ToString() + ";Uid=" + tdsC.conn.userDB + ";Pwd=" + tdsC.conn.passwordDB + ";port = 6318;Connection Timeout = 300;default command timeout=0;";
+                        conn01[connBck].Open();
+                        com01.Connection = conn01[connBck];      //+2
+                        //MessageBox.Show("bck 2222");
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("bck " + bck.ToString() + " i = " + i + " error " + ex.Message.ToString());
+                    }
                 }
-                catch(Exception ex)
-                {
-                    MessageBox.Show("bck "+bck.ToString()+" error "+ex.Message.ToString());
-                }
+                
                 
                 //conn01.ConnectionString = txtConnGPS01.Text;
                 
@@ -349,11 +359,18 @@ namespace tranDataSchedule
                     + " รายได้ " + incomeTripSum + " ระยะทางรับผู้โดยสาร " + distanceTripSum + " distanceDay " + distanceDay );
                 //lB1.Refresh();
                 pB1.Value = i;
-                conn01.Close();
+                //conn01.Close();       //-2
                 this.Refresh();
                 
             }
             connDaily.Close();
+            for(int i = 0; i < 100; i++)//  +2
+            {
+                if ((conn01[i] != null) && (conn01[i].State == ConnectionState.Open))       //  +2
+                {
+                    conn01[connBck].Close();
+                }
+            }
             pB1.Visible = false;
         }
 
