@@ -121,7 +121,7 @@ namespace tranDataSchedule
             for (int i = 0; i < dtCar.Rows.Count; i++)// มีรถกี่คัน
             {
                 sql1.Clear();
-                sqlTrip.Clear();
+                
                 stripStart = false;
                 stripEnd = false;
                 distanceDay = 0.0;
@@ -129,14 +129,14 @@ namespace tranDataSchedule
                 incomeTripSum = 0;
                 TripCnt = 0;
                 timeStart = tdsC.setTimeCurrent();
-                //if (!dtCar.Rows[i]["imei"].ToString().Equals("58063983"))
+                //if (!dtCar.Rows[i]["imei"].ToString().Equals("58063983"))     //// for test
                 //{
                 //    continue;
                 //}
-                if (!dtCar.Rows[i]["imei"].ToString().Equals("57032980"))
-                {
-                    continue;
-                }
+                //if (!dtCar.Rows[i]["imei"].ToString().Equals("57032985"))     //// for test
+                //{
+                //    continue;
+                //}
                 bck.Clear();
                 if (dtCar.Rows[i]["bck_server_id"].ToString().Length == 1)
                 {
@@ -160,6 +160,7 @@ namespace tranDataSchedule
                         //MessageBox.Show("bck 22");
                         conn01[connBck] = new MySqlConnection();
                         conn01[connBck].ConnectionString = "Server=" + tdsC.conn.hostDB + ";Database=gps_backup_" + bck.ToString() + ";Uid=" + tdsC.conn.userDB + ";Pwd=" + tdsC.conn.passwordDB + ";port = 6318;Connection Timeout = 300;default command timeout=0;";
+                        //conn01[connBck].ConnectionString = "Server=" + tdsC.conn.hostDB + ";Database=gps_backup_" + bck.ToString() + ";Uid=" + tdsC.conn.userDB + ";port = 3306;Connection Timeout = 300;default command timeout=0;"; // for test
                         conn01[connBck].Open();
                         com01.Connection = conn01[connBck];      //+2
                         //MessageBox.Show("bck 2222");
@@ -171,13 +172,13 @@ namespace tranDataSchedule
                 }
 
                 //conn01.ConnectionString = txtConnGPS01.Text;
-
+                sqlTrip.Clear();
                 //sqlTrip.Append("Select imei, gps_date, gps_time, gps_input1, gps_speed From positionbackup Where imei = '")
                 //    .Append(dtCar.Rows[i]["imei"].ToString()).Append("' and gps_ign = 1 and gps_date = '").Append(dateStart).Append("' Order By gps_time");
                 //sqlTrip.Append("Select imei, gps_date_time, gps_date, gps_time, gps_input1, gps_speed, gps_lat, gps_lon, packet_arrived_time From positionbackup Where imei = '")     // -3
                 //    .Append(dtCar.Rows[i]["imei"].ToString()).Append("'  and gps_date = '").Append(dateStart).Append("' Order By gps_time");          //      -3
-                sqlTrip.Append("Select imei, gps_date_time, gps_date, gps_time, gps_input1, gps_speed, gps_lat, gps_lon, packet_arrived_time From positionbackup Where imei = ")       //  +3
-                    .Append(dtCar.Rows[i]["imei"].ToString()).Append("  and gps_date = '").Append(dateStart).Append("' Order By gps_time");        //  +3
+                sqlTrip.Append("Select imei, gps_date_time, gps_date, gps_time, gps_input1, gps_speed, gps_lat, gps_lon, packet_arrived_time From positionbackup Where imei = '")       //  +3
+                    .Append(dtCar.Rows[i]["imei"].ToString()).Append("'  and gps_date = '").Append(dateStart).Append("' Order By gps_time");        //  +3
                 com01.CommandText = sqlTrip.ToString();// ดึงรถตาม imei ดึงทั้งวัน
                 dt.Rows.Clear();
                 adap01.Fill(dt);
