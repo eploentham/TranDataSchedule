@@ -15,6 +15,8 @@ using tranDataSchedule.object1;
  * 1. bug date taxi_meter ลงผิด format ลงเป็น 2560
  * 2017-07-30
  * 2. change connection to array
+ * 2017-07-31
+ * 3. แก้ query gpsbackup_xx ให้ดึงข้อมูล imei ตามค่า number
  */
 namespace tranDataSchedule
 {
@@ -48,7 +50,8 @@ namespace tranDataSchedule
             //txtConGPSOnLIne.Text = "server=localhost;database=gpsonline;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
             //txtConnGPS01.Text = "server=localhost;database=gps_backup_01;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
             //txtConnDaily.Text = "server=localhost;database=daily_report;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
-            this.Text = "Last Update 30-07-2560 1. bug date taxi_meter ลงผิด format ลงเป็น 2560";
+            //this.Text = "Last Update 30-07-2560 1. bug date taxi_meter ลงผิด format ลงเป็น 2560";
+            this.Text = "Last Update 31-07-2560 2. change connection to array";
         }
         private void showChkAuto()
         {
@@ -130,9 +133,9 @@ namespace tranDataSchedule
                 //{
                 //    continue;
                 //}
-                if (!dtCar.Rows[i]["imei"].ToString().Equals("56072558"))
+                if (!dtCar.Rows[i]["imei"].ToString().Equals("57032980"))
                 {
-                    //continue;
+                    continue;
                 }
                 bck.Clear();
                 if (dtCar.Rows[i]["bck_server_id"].ToString().Length == 1)
@@ -166,14 +169,15 @@ namespace tranDataSchedule
                         MessageBox.Show("bck " + bck.ToString() + " i = " + i + " error " + ex.Message.ToString());
                     }
                 }
-                
-                
+
                 //conn01.ConnectionString = txtConnGPS01.Text;
-                
+
                 //sqlTrip.Append("Select imei, gps_date, gps_time, gps_input1, gps_speed From positionbackup Where imei = '")
                 //    .Append(dtCar.Rows[i]["imei"].ToString()).Append("' and gps_ign = 1 and gps_date = '").Append(dateStart).Append("' Order By gps_time");
-                sqlTrip.Append("Select imei, gps_date_time, gps_date, gps_time, gps_input1, gps_speed, gps_lat, gps_lon, packet_arrived_time From positionbackup Where imei = '")
-                    .Append(dtCar.Rows[i]["imei"].ToString()).Append("'  and gps_date = '").Append(dateStart).Append("' Order By gps_time");
+                //sqlTrip.Append("Select imei, gps_date_time, gps_date, gps_time, gps_input1, gps_speed, gps_lat, gps_lon, packet_arrived_time From positionbackup Where imei = '")     // -3
+                //    .Append(dtCar.Rows[i]["imei"].ToString()).Append("'  and gps_date = '").Append(dateStart).Append("' Order By gps_time");          //      -3
+                sqlTrip.Append("Select imei, gps_date_time, gps_date, gps_time, gps_input1, gps_speed, gps_lat, gps_lon, packet_arrived_time From positionbackup Where imei = ")       //  +3
+                    .Append(dtCar.Rows[i]["imei"].ToString()).Append("  and gps_date = '").Append(dateStart).Append("' Order By gps_time");        //  +3
                 com01.CommandText = sqlTrip.ToString();// ดึงรถตาม imei ดึงทั้งวัน
                 dt.Rows.Clear();
                 adap01.Fill(dt);
