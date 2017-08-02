@@ -133,7 +133,7 @@ namespace tranDataSchedule
                 //{
                 //    continue;
                 //}
-                //if (!dtCar.Rows[i]["imei"].ToString().Equals("57032985"))     //// for test
+                //if (!dtCar.Rows[i]["imei"].ToString().Equals("59034945"))     //// for test
                 //{
                 //    continue;
                 //}
@@ -159,8 +159,8 @@ namespace tranDataSchedule
                     {
                         //MessageBox.Show("bck 22");
                         conn01[connBck] = new MySqlConnection();
-                        conn01[connBck].ConnectionString = "Server=" + tdsC.conn.hostDB + ";Database=gps_backup_" + bck.ToString() + ";Uid=" + tdsC.conn.userDB + ";Pwd=" + tdsC.conn.passwordDB + ";port = 6318;Connection Timeout = 300;default command timeout=0;";
-                        //conn01[connBck].ConnectionString = "Server=" + tdsC.conn.hostDB + ";Database=gps_backup_" + bck.ToString() + ";Uid=" + tdsC.conn.userDB + ";port = 3306;Connection Timeout = 300;default command timeout=0;"; // for test
+                        //conn01[connBck].ConnectionString = "Server=" + tdsC.conn.hostDB + ";Database=gps_backup_" + bck.ToString() + ";Uid=" + tdsC.conn.userDB + ";Pwd=" + tdsC.conn.passwordDB + ";port = 6318;Connection Timeout = 300;default command timeout=0;";
+                        conn01[connBck].ConnectionString = "Server=" + tdsC.conn.hostDB + ";Database=gps_backup_" + bck.ToString() + ";Uid=" + tdsC.conn.userDB + ";port = 3306;Connection Timeout = 300;default command timeout=0;"; // for test
                         conn01[connBck].Open();
                         com01.Connection = conn01[connBck];      //+2
                         //MessageBox.Show("bck 2222");
@@ -177,8 +177,8 @@ namespace tranDataSchedule
                 //    .Append(dtCar.Rows[i]["imei"].ToString()).Append("' and gps_ign = 1 and gps_date = '").Append(dateStart).Append("' Order By gps_time");
                 //sqlTrip.Append("Select imei, gps_date_time, gps_date, gps_time, gps_input1, gps_speed, gps_lat, gps_lon, packet_arrived_time From positionbackup Where imei = '")     // -3
                 //    .Append(dtCar.Rows[i]["imei"].ToString()).Append("'  and gps_date = '").Append(dateStart).Append("' Order By gps_time");          //      -3
-                sqlTrip.Append("Select imei, gps_date_time, gps_date, gps_time, gps_input1, gps_speed, gps_lat, gps_lon, packet_arrived_time From positionbackup Where imei = '")       //  +3
-                    .Append(dtCar.Rows[i]["imei"].ToString()).Append("'  and gps_date = '").Append(dateStart).Append("' Order By gps_time");        //  +3
+                sqlTrip.Append("Select imei, gps_date_time, gps_date, gps_time, gps_input1, gps_speed, gps_lat, gps_lon, packet_arrived_time From positionbackup Where imei = ")       //  +3
+                    .Append(dtCar.Rows[i]["imei"].ToString()).Append("  and gps_date = '").Append(dateStart).Append("' Order By gps_time");        //  +3
                 com01.CommandText = sqlTrip.ToString();// ดึงรถตาม imei ดึงทั้งวัน
                 dt.Rows.Clear();
                 adap01.Fill(dt);
@@ -338,10 +338,10 @@ namespace tranDataSchedule
                 
                 try
                 {
-                    sql1.Append("Insert Into car_daily(car_daily_id, car_id, imei, daily_date, distance, income, trip_cnt, trip_distance, time_start, time_end, time_schedule, date_start) ")
+                    sql1.Append("Insert Into car_daily(car_daily_id, car_id, imei, daily_date, distance, income, trip_cnt, trip_distance, time_start, time_end, time_schedule, bck_server_id, date_start) ")
                     .Append("Values(UUID()").Append(",'").Append(dtCar.Rows[i]["car_id"].ToString()).Append("','").Append(dtCar.Rows[i]["imei"].ToString())
                     .Append("','").Append(dateStart).Append("','").Append(distanceDay)
-                    .Append("',").Append(incomeTripSum).Append(",'").Append(TripCnt).Append("','").Append(distanceTripSum).Append("','").Append(timeStart).Append("','").Append(tdsC.setTimeCurrent()).Append("','").Append(txtAutoStart.Text).Append("', now())");
+                    .Append("',").Append(incomeTripSum).Append(",'").Append(TripCnt).Append("','").Append(distanceTripSum).Append("','").Append(timeStart).Append("','").Append(tdsC.setTimeCurrent()).Append("','").Append(txtAutoStart.Text).Append("','").Append(connBck).Append("', now())");//connBck
                     comDaily.CommandText = sql1.ToString();
 
                     comDaily.ExecuteNonQuery();
