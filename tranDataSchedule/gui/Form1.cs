@@ -21,6 +21,7 @@ using tranDataSchedule.object1;
  * 4. เอา connection array ออก   un comment 2. และเพิ่ม +4
  * Test ใช้ array แล้ว ข้อมูลไม่มา หาสาเหต ไม่เจอ คือ query ข้อมูลไม่ขึ้น ได้บ้าง ไม่ได้บ้าง แต่ได้น้อยมาก query บันทัด 188
  * อาจต้องแก้ ให้ com01 = new MySqlCommand(); บันทัด 162 +4 อาจแก้ปัญหาได้ แต่ยังไม่ได้ทำ
+ * 5. ปรับโปรแรกม เพิ่ม Field daily_report.customer_id และ taxi_meter.customer_id
  */
 namespace tranDataSchedule
 {
@@ -301,11 +302,11 @@ namespace tranDataSchedule
                                     //.Append(dt.Rows[j]["gps_lat"].ToString()).Append("','").Append(dt.Rows[j]["gps_lon"].ToString()).Append("',")
                                     //.Append(distance).Append(",").Append(incomeTrip).Append(") ");        // -1.
                                     sql1.Append("Insert Into taxi_meter(t_imei, t_start_time, t_start_gps_lat, t_start_gps_lon")
-                                    .Append(", t_off_time, t_off_gps_lat, t_off_gps_lon, t_distance, t_taxi_fare ) ")
+                                    .Append(", t_off_time, t_off_gps_lat, t_off_gps_lon, t_distance, t_taxi_fare, customer_id ) ")
                                     .Append("Values('").Append(dtCar.Rows[i]["imei"].ToString()).Append("','").Append(dtS.ToString()).Append("','").Append(dt.Rows[rowStart]["gps_lat"].ToString()).Append("','").Append(dt.Rows[rowStart]["gps_lon"].ToString()).Append("'")
                                     .Append(",'").Append(dtE.ToString()).Append("','").Append(dt.Rows[j]["gps_lat"].ToString()).Append("','")
                                     .Append(dt.Rows[j]["gps_lon"].ToString()).Append("',").Append(distance).Append(",")
-                                    .Append(incomeTrip).Append(") ");       // +1.
+                                    .Append(incomeTrip).Append("','").Append(dtCar.Rows[i]["customer_id"].ToString()).Append(") ");       // +1.
                                     comDaily.CommandText = sql1.ToString();
 
                                     comDaily.ExecuteNonQuery();
@@ -347,12 +348,12 @@ namespace tranDataSchedule
                 
                 try
                 {
-                    sql1.Append("Insert Into car_daily(car_daily_id, car_id, imei, daily_date, distance, income, trip_cnt, trip_distance, time_start, time_end, time_schedule, bck_server_id, car_Sql, car_cnt, date_start) ")
+                    sql1.Append("Insert Into car_daily(car_daily_id, car_id, imei, daily_date, distance, income, trip_cnt, trip_distance, time_start, time_end, time_schedule, bck_server_id, car_Sql, car_cnt, customer_id, date_start) ")
                     .Append("Values(UUID()").Append(",'").Append(dtCar.Rows[i]["car_id"].ToString()).Append("','").Append(dtCar.Rows[i]["imei"].ToString())
                     .Append("','").Append(dateStart).Append("','").Append(distanceDay)
                     .Append("',").Append(incomeTripSum).Append(",'").Append(TripCnt).Append("','").Append(distanceTripSum)
                     .Append("','").Append(timeStart).Append("','").Append(tdsC.setTimeCurrent()).Append("','").Append(txtAutoStart.Text)
-                    .Append("','").Append(connBck).Append("','").Append(sqlTrip.ToString().Replace("'","''")).Append("','").Append(dt.Rows.Count.ToString()).Append("', now())");//connBck
+                    .Append("','").Append(connBck).Append("','").Append(sqlTrip.ToString().Replace("'","''")).Append("','").Append(dt.Rows.Count.ToString()).Append("','").Append(dtCar.Rows[i]["customer_id"].ToString()).Append("', now())");//connBck
                     comDaily.CommandText = sql1.ToString();
 
                     comDaily.ExecuteNonQuery();
