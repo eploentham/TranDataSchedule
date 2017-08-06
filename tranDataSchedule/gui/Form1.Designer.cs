@@ -36,6 +36,8 @@
             this.txtTimeEnd = new System.Windows.Forms.MaskedTextBox();
             this.btnCheckData = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.txtAutoStart = new System.Windows.Forms.MaskedTextBox();
             this.gbManual = new System.Windows.Forms.GroupBox();
             this.label3 = new System.Windows.Forms.Label();
             this.txtDateManual = new System.Windows.Forms.DateTimePicker();
@@ -45,11 +47,11 @@
             this.chkManual = new System.Windows.Forms.RadioButton();
             this.chkAuto = new System.Windows.Forms.RadioButton();
             this.label2 = new System.Windows.Forms.Label();
-            this.txtTimeStart = new System.Windows.Forms.MaskedTextBox();
-            this.pB1 = new System.Windows.Forms.ProgressBar();
-            this.txtTimeCurrent = new System.Windows.Forms.MaskedTextBox();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.label1 = new System.Windows.Forms.Label();
+            this.txtTimeStart = new System.Windows.Forms.MaskedTextBox();
+            this.txtTimeCurrent = new System.Windows.Forms.MaskedTextBox();
+            this.pB1 = new System.Windows.Forms.ProgressBar();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.lB1 = new System.Windows.Forms.ListBox();
             this.txtConGPSOnLIne = new System.Windows.Forms.TextBox();
             this.txtConnGPS01 = new System.Windows.Forms.TextBox();
@@ -57,8 +59,6 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.txtConnDaily = new System.Windows.Forms.TextBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.txtAutoStart = new System.Windows.Forms.MaskedTextBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtGPSError)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -138,6 +138,7 @@
             this.btnCheckData.TabIndex = 4;
             this.btnCheckData.Text = "ตรวจสอบข้อมูล";
             this.btnCheckData.UseVisualStyleBackColor = true;
+            this.btnCheckData.Click += new System.EventHandler(this.btnCheckData_Click);
             // 
             // groupBox2
             // 
@@ -151,6 +152,26 @@
             this.groupBox2.Size = new System.Drawing.Size(508, 299);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(222)));
+            this.label9.Location = new System.Drawing.Point(177, 25);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(67, 16);
+            this.label9.TabIndex = 5;
+            this.label9.Text = "เวลาดึงข้อมูล";
+            // 
+            // txtAutoStart
+            // 
+            this.txtAutoStart.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(222)));
+            this.txtAutoStart.Location = new System.Drawing.Point(277, 16);
+            this.txtAutoStart.Mask = "00:00";
+            this.txtAutoStart.Name = "txtAutoStart";
+            this.txtAutoStart.Size = new System.Drawing.Size(65, 29);
+            this.txtAutoStart.TabIndex = 4;
+            this.txtAutoStart.ValidatingType = typeof(System.DateTime);
             // 
             // gbManual
             // 
@@ -252,6 +273,16 @@
             this.label2.TabIndex = 2;
             this.label2.Text = "เวลาเริ่มทำงาน";
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(222)));
+            this.label1.Location = new System.Drawing.Point(527, 111);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(61, 16);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "เวลาปัจจุบัน";
+            // 
             // txtTimeStart
             // 
             this.txtTimeStart.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(222)));
@@ -261,13 +292,6 @@
             this.txtTimeStart.Size = new System.Drawing.Size(65, 26);
             this.txtTimeStart.TabIndex = 1;
             this.txtTimeStart.ValidatingType = typeof(System.DateTime);
-            // 
-            // pB1
-            // 
-            this.pB1.Location = new System.Drawing.Point(12, 460);
-            this.pB1.Name = "pB1";
-            this.pB1.Size = new System.Drawing.Size(1091, 23);
-            this.pB1.TabIndex = 1;
             // 
             // txtTimeCurrent
             // 
@@ -279,20 +303,17 @@
             this.txtTimeCurrent.TabIndex = 2;
             this.txtTimeCurrent.ValidatingType = typeof(System.DateTime);
             // 
+            // pB1
+            // 
+            this.pB1.Location = new System.Drawing.Point(12, 460);
+            this.pB1.Name = "pB1";
+            this.pB1.Size = new System.Drawing.Size(1091, 23);
+            this.pB1.TabIndex = 1;
+            // 
             // timer1
             // 
             this.timer1.Interval = 1000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(222)));
-            this.label1.Location = new System.Drawing.Point(527, 111);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(61, 16);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "เวลาปัจจุบัน";
             // 
             // lB1
             // 
@@ -349,26 +370,6 @@
             this.txtConnDaily.Name = "txtConnDaily";
             this.txtConnDaily.Size = new System.Drawing.Size(900, 20);
             this.txtConnDaily.TabIndex = 9;
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(222)));
-            this.label9.Location = new System.Drawing.Point(177, 25);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(67, 16);
-            this.label9.TabIndex = 5;
-            this.label9.Text = "เวลาดึงข้อมูล";
-            // 
-            // txtAutoStart
-            // 
-            this.txtAutoStart.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(222)));
-            this.txtAutoStart.Location = new System.Drawing.Point(277, 16);
-            this.txtAutoStart.Mask = "00:00";
-            this.txtAutoStart.Name = "txtAutoStart";
-            this.txtAutoStart.Size = new System.Drawing.Size(65, 29);
-            this.txtAutoStart.TabIndex = 4;
-            this.txtAutoStart.ValidatingType = typeof(System.DateTime);
             // 
             // Form1
             // 

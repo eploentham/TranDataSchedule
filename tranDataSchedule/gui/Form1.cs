@@ -56,7 +56,7 @@ namespace tranDataSchedule
             //txtConnGPS01.Text = "server=localhost;database=gps_backup_01;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
             //txtConnDaily.Text = "server=localhost;database=daily_report;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
             //this.Text = "Last Update 30-07-2560 1. bug date taxi_meter ลงผิด format ลงเป็น 2560";
-            this.Text = "Last Update 31-07-2560 4. เอา connection array ออก";
+            this.Text = "Last Update 06-08-2560 5. ปรับโปรแรกม เพิ่ม Field daily_report.customer_id และ taxi_meter.customer_id";
         }
         private void showChkAuto()
         {
@@ -390,6 +390,49 @@ namespace tranDataSchedule
             //}
             pB1.Visible = false;
         }
+        private void updateCustomerID()
+        {
+            /*
+             *60-08-06 แก้โปรแกรม ให้update customer_id ใน table car_daily, taxi_meter
+             */
+            MySqlConnection connDaily = new MySqlConnection();
+            MySqlCommand comDaily = new MySqlCommand();
+            DataTable dtCar = new DataTable();
+            DataTable dt = new DataTable();
+            String sql = "";
+            pB1.Show();
+            pB1.Visible = true;
+            pB1.Minimum = 0;
+            //MySqlDataAdapter adapDaily = new MySqlDataAdapter(comDaily);
+            //connDaily.ConnectionString = txtConnDaily.Text;
+            try
+            {
+                connDaily.ConnectionString = txtConnDaily.Text;
+                connDaily.Open();
+                comDaily.Connection = connDaily;
+                dtCar = tdsC.selectCarAll(txtConGPSOnLIne.Text);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error " + ex.Message.ToString());
+                return;
+            }
+            
+            pB1.Maximum = dtCar.Rows.Count;
+            for (int i = 0; i < dtCar.Rows.Count; i++)// มีรถกี่คัน
+            {
+                sql = "Update car_daily Set customer_id = '" + dtCar.Rows[i]["customer_id"].ToString() + "' Where imei = '" + dtCar.Rows[i]["imei"].ToString()+"'";
+                comDaily.CommandText = sql;
+                comDaily.ExecuteNonQuery();
+
+                sql = "Update taxi_meter Set customer_id = '" + dtCar.Rows[i]["customer_id"].ToString() + "' Where t_imei = " + dtCar.Rows[i]["imei"].ToString();
+                comDaily.CommandText = sql;
+                comDaily.ExecuteNonQuery();
+                pB1.Value = i;
+            }
+            connDaily.Close();
+            pB1.Visible = false;
+        }
 
         private void chkManual_Click(object sender, EventArgs e)
         {
@@ -420,6 +463,11 @@ namespace tranDataSchedule
             //aaa = "aa";
             selectCar(txtDateManual.Value.Year.ToString() + "-" + txtDateManual.Value.ToString("MM-dd"), txtDateManual.Value.Year.ToString() + "-" + txtDateManual.Value.ToString("MM-dd"));
             txtTimeEnd.Text = tdsC.setTimeCurrent();
+        }
+
+        private void btnCheckData_Click(object sender, EventArgs e)
+        {
+            updateCustomerID();     //5.
         }
     }
 }
