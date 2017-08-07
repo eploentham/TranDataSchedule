@@ -23,6 +23,7 @@ using tranDataSchedule.object1;
  * อาจต้องแก้ ให้ com01 = new MySqlCommand(); บันทัด 162 +4 อาจแก้ปัญหาได้ แต่ยังไม่ได้ทำ
  * 5. ปรับโปรแรกม เพิ่ม Field daily_report.customer_id และ taxi_meter.customer_id
  * 6. ปรับโปรแกรม เปลี่ยน database ไป aws rds
+ * 7. Bug customer_id
  */
 namespace tranDataSchedule
 {
@@ -201,7 +202,7 @@ namespace tranDataSchedule
                 dt.Rows.Clear();
                 //MessageBox.Show("bck 2222 i" + i);
                 //MessageBox.Show("bck 3333 " + sqlTrip.ToString());
-                adap01 = new MySqlDataAdapter(com01);
+                adap01 = new MySqlDataAdapter(com01);       //+7
                 adap01.Fill(dt);
                 //MessageBox.Show("bck 4444 i" + i);
                 if (dt.Rows.Count > 0)
