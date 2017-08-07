@@ -22,6 +22,7 @@ using tranDataSchedule.object1;
  * Test ใช้ array แล้ว ข้อมูลไม่มา หาสาเหต ไม่เจอ คือ query ข้อมูลไม่ขึ้น ได้บ้าง ไม่ได้บ้าง แต่ได้น้อยมาก query บันทัด 188
  * อาจต้องแก้ ให้ com01 = new MySqlCommand(); บันทัด 162 +4 อาจแก้ปัญหาได้ แต่ยังไม่ได้ทำ
  * 5. ปรับโปรแรกม เพิ่ม Field daily_report.customer_id และ taxi_meter.customer_id
+ * 6. ปรับโปรแกรม เปลี่ยน database ไป aws rds
  */
 namespace tranDataSchedule
 {
@@ -50,7 +51,9 @@ namespace tranDataSchedule
             timer1.Start();
             txtConGPSOnLIne.Text = tdsC.conn.connOnLine.ConnectionString;//server=localhost;database=gpsonline;user id=root;password=-;port=6318
             txtConnGPS01.Text = tdsC.conn.conn01.ConnectionString;
-            txtConnDaily.Text = tdsC.conn.connOnLine.ConnectionString.Replace("gpsonline","daily_report");
+            //txtConnDaily.Text = tdsC.conn.connOnLine.ConnectionString.Replace("gpsonline","daily_report");
+            txtConnDaily.Text = "server=taxidashboard.ccegjxy0bmku.ap-southeast-1.rds.amazonaws.com;database=daily_report;user id=oriscom;password=mocsiro1*;port=3306";
+
 
             //txtConGPSOnLIne.Text = "server=localhost;database=gpsonline;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
             //txtConnGPS01.Text = "server=localhost;database=gps_backup_01;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
@@ -97,27 +100,29 @@ namespace tranDataSchedule
             Boolean stripStartOld = false;
             Boolean stripEnd = false;
             Boolean insertTrip = false;
-            
+            //MessageBox.Show("bck 11");
             connDaily.ConnectionString = txtConnDaily.Text;
             //conn01.ConnectionString = txtConnGPS01.Text;      //-2
+            //MessageBox.Show("bck 22");
             connDaily.Open();
+            //MessageBox.Show("bck 33");
             //conn01.Open();
             comDaily.Connection = connDaily;
             com01.Connection = conn01;        //-2
             MySqlDataAdapter adap01 = new MySqlDataAdapter(com01);
-
+            //MessageBox.Show("bck 11");
             Double km = 0.0, distance = 0.0, distanceDay=0.0, distanceTripSum=0.0;
             DateTime dtStart, dtEnd;
             pB1.Show();
             pB1.Visible = true;
             pB1.Minimum = 0;
-
+            //MessageBox.Show("bck 22");
             //dateStart = (int.Parse(dateStart.Substring(0, 4)) + 543) + dateStart.Substring(4);
             //dateEnd = (int.Parse(dateEnd.Substring(0, 4)) + 543) + dateEnd.Substring(4);
 
             lB1.Items.Clear();
             lB1.Items.Add("ตรวจสอบข้อมูล");
-
+            //MessageBox.Show("bck 33");
             lB1.Items.Add("ประจำวันที่ " + dateStart + " ถึงวันที่ " + dateEnd);
             //MessageBox.Show("bck " );
             dtCar = tdsC.selectCarAll(txtConGPSOnLIne.Text);
@@ -156,11 +161,14 @@ namespace tranDataSchedule
                 {     //  -2
                     conn01.Close();       //  -2
                 }     //  -2
+                //MessageBox.Show("bck "+bck.ToString());
                 conn01.ConnectionString = "Server=" + tdsC.conn.hostDB + ";Database=gps_backup_" + bck.ToString() + ";Uid=" + tdsC.conn.userDB + ";Pwd=" + tdsC.conn.passwordDB + ";port = 6318;Connection Timeout = 300;default command timeout=0;";       //-2
                 //conn01.ConnectionString = "Server=" + tdsC.conn.hostDB + ";Database=gps_backup_" + bck.ToString() + ";Uid=" + tdsC.conn.userDB + ";port = 3306;Connection Timeout = 300;default command timeout=0;"; // for test conn01.Open();       //-2
                 conn01.Open();  // -2
+                //MessageBox.Show("bck 222");
                 com01 = new MySqlCommand();         // +4
                 com01.Connection = conn01;          //+4
+                //MessageBox.Show("bck 333");
                 //bck.Clear();      //for test debug
                 //bck.Append("01"); //for test debug
                 //if ((conn01[connBck] == null) || (conn01[connBck].State == ConnectionState.Closed))       //  +2
@@ -191,7 +199,11 @@ namespace tranDataSchedule
                     .Append(dtCar.Rows[i]["imei"].ToString()).Append("  and gps_date = '").Append(dateStart).Append("' Order By gps_time");        //  +3
                 com01.CommandText = sqlTrip.ToString();// ดึงรถตาม imei ดึงทั้งวัน
                 dt.Rows.Clear();
+                //MessageBox.Show("bck 2222 i" + i);
+                //MessageBox.Show("bck 3333 " + sqlTrip.ToString());
+                adap01 = new MySqlDataAdapter(com01);
                 adap01.Fill(dt);
+                //MessageBox.Show("bck 4444 i" + i);
                 if (dt.Rows.Count > 0)
                 {
                     rowStart = 0;
@@ -306,9 +318,9 @@ namespace tranDataSchedule
                                     .Append("Values('").Append(dtCar.Rows[i]["imei"].ToString()).Append("','").Append(dtS.ToString()).Append("','").Append(dt.Rows[rowStart]["gps_lat"].ToString()).Append("','").Append(dt.Rows[rowStart]["gps_lon"].ToString()).Append("'")
                                     .Append(",'").Append(dtE.ToString()).Append("','").Append(dt.Rows[j]["gps_lat"].ToString()).Append("','")
                                     .Append(dt.Rows[j]["gps_lon"].ToString()).Append("',").Append(distance).Append(",")
-                                    .Append(incomeTrip).Append("','").Append(dtCar.Rows[i]["customer_id"].ToString()).Append(") ");       // +1.
+                                    .Append(incomeTrip).Append(",'").Append(dtCar.Rows[i]["customer_id"].ToString()).Append("') ");       // +1.
                                     comDaily.CommandText = sql1.ToString();
-
+                                    //MessageBox.Show("sql  " + sql1.ToString());
                                     comDaily.ExecuteNonQuery();
                                     stripStart = false;
                                     //throw ();
@@ -468,6 +480,23 @@ namespace tranDataSchedule
         private void btnCheckData_Click(object sender, EventArgs e)
         {
             updateCustomerID();     //5.
+        }
+
+        private void btnTest_Click(object sender, EventArgs e)
+        {
+            MySqlConnection connDaily = new MySqlConnection();
+            connDaily.ConnectionString = txtConnDaily.Text;
+            try
+            {
+                connDaily.Open();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error " + ex.Message.ToString());
+                return;
+            }
+            MessageBox.Show("Connection OK " );
+            connDaily.Close();
         }
     }
 }

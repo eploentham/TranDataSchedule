@@ -59,6 +59,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.txtConnDaily = new System.Windows.Forms.TextBox();
+            this.btnTest = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtGPSError)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -67,6 +68,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.btnTest);
             this.groupBox1.Controls.Add(this.label8);
             this.groupBox1.Controls.Add(this.txtGPSError);
             this.groupBox1.Controls.Add(this.label6);
@@ -371,6 +373,16 @@
             this.txtConnDaily.Size = new System.Drawing.Size(900, 20);
             this.txtConnDaily.TabIndex = 9;
             // 
+            // btnTest
+            // 
+            this.btnTest.Location = new System.Drawing.Point(530, 297);
+            this.btnTest.Name = "btnTest";
+            this.btnTest.Size = new System.Drawing.Size(160, 23);
+            this.btnTest.TabIndex = 9;
+            this.btnTest.Text = "Test Connection";
+            this.btnTest.UseVisualStyleBackColor = true;
+            this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -433,6 +445,7 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.MaskedTextBox txtAutoStart;
+        private System.Windows.Forms.Button btnTest;
     }
 }
 
