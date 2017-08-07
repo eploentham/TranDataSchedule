@@ -24,6 +24,7 @@ using tranDataSchedule.object1;
  * 5. ปรับโปรแรกม เพิ่ม Field daily_report.customer_id และ taxi_meter.customer_id
  * 6. ปรับโปรแกรม เปลี่ยน database ไป aws rds
  * 7. Bug customer_id
+ * 8. แก้เรื่อง จุดทศนิยม ให้มีแค่ 2 จุด   ยังไม่ได้ทำ  60-08-07 รับแจ้ง 60-08-05 เจ้าของแจ้ง 
  */
 namespace tranDataSchedule
 {
