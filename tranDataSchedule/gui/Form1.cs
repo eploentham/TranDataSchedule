@@ -63,6 +63,7 @@ namespace tranDataSchedule
             //txtConnDaily.Text = "server=localhost;database=daily_report;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
             //this.Text = "Last Update 30-07-2560 1. bug date taxi_meter ลงผิด format ลงเป็น 2560";
             this.Text = "Last Update 06-08-2560 5. ปรับโปรแรกม เพิ่ม Field daily_report.customer_id และ taxi_meter.customer_id";
+            pB1.Visible = false;
         }
         private void showChkAuto()
         {
@@ -320,7 +321,7 @@ namespace tranDataSchedule
                                     .Append(", t_off_time, t_off_gps_lat, t_off_gps_lon, t_distance, t_taxi_fare, customer_id ) ")
                                     .Append("Values('").Append(dtCar.Rows[i]["imei"].ToString()).Append("','").Append(dtS.ToString()).Append("','").Append(dt.Rows[rowStart]["gps_lat"].ToString()).Append("','").Append(dt.Rows[rowStart]["gps_lon"].ToString()).Append("'")
                                     .Append(",'").Append(dtE.ToString()).Append("','").Append(dt.Rows[j]["gps_lat"].ToString()).Append("','")
-                                    .Append(dt.Rows[j]["gps_lon"].ToString()).Append("',").Append(distance).Append(",")
+                                    .Append(dt.Rows[j]["gps_lon"].ToString()).Append("',").Append(Math.Round(distance,2)).Append(",")
                                     .Append(incomeTrip).Append(",'").Append(dtCar.Rows[i]["customer_id"].ToString()).Append("') ");       // +1.
                                     comDaily.CommandText = sql1.ToString();
                                     //MessageBox.Show("sql  " + sql1.ToString());
@@ -365,8 +366,8 @@ namespace tranDataSchedule
                 {
                     sql1.Append("Insert Into car_daily(car_daily_id, car_id, imei, daily_date, distance, income, trip_cnt, trip_distance, time_start, time_end, time_schedule, bck_server_id, car_Sql, car_cnt, customer_id, date_start) ")
                     .Append("Values(UUID()").Append(",'").Append(dtCar.Rows[i]["car_id"].ToString()).Append("','").Append(dtCar.Rows[i]["imei"].ToString())
-                    .Append("','").Append(dateStart).Append("','").Append(distanceDay)
-                    .Append("',").Append(incomeTripSum).Append(",'").Append(TripCnt).Append("','").Append(distanceTripSum)
+                    .Append("','").Append(dateStart).Append("','").Append(Math.Round(distanceDay, 2))
+                    .Append("',").Append(incomeTripSum).Append(",'").Append(TripCnt).Append("','").Append(Math.Round(distanceTripSum, 2))
                     .Append("','").Append(timeStart).Append("','").Append(tdsC.setTimeCurrent()).Append("','").Append(txtAutoStart.Text)
                     .Append("','").Append(connBck).Append("','").Append(sqlTrip.ToString().Replace("'","''")).Append("','").Append(dt.Rows.Count.ToString()).Append("','").Append(dtCar.Rows[i]["customer_id"].ToString()).Append("', now())");//connBck
                     comDaily.CommandText = sql1.ToString();
@@ -454,6 +455,7 @@ namespace tranDataSchedule
              *60-08-06 แก้โปรแกรม ให้update car_id ใน table car_daily 06,07,08  salee แจ้ง 60-08-08
              * 
              */
+            pB1.Visible = true;
             MySqlConnection connDaily = new MySqlConnection();
             MySqlCommand comDaily = new MySqlCommand();
             MySqlDataAdapter adap01 = new MySqlDataAdapter(comDaily);
@@ -461,6 +463,7 @@ namespace tranDataSchedule
             DataTable dtCar = new DataTable();
             String sql = "";
             String imei = "";
+            lB1.Items.Add("updateCarID");
             try
             {
                 connDaily.ConnectionString = txtConnDaily.Text;
@@ -474,7 +477,9 @@ namespace tranDataSchedule
                 MessageBox.Show("Error " + ex.Message.ToString());
                 return;
             }
+            lB1.Items.Add("ConnectionString");
             dtCar = tdsC.selectCarAll(txtConGPSOnLIne.Text);
+            lB1.Items.Add("selectCarAll");
             comDaily.CommandText = sql;
             adap01 = new MySqlDataAdapter(comDaily);      
             adap01.Fill(dt);
@@ -486,12 +491,13 @@ namespace tranDataSchedule
                 {
                     if (imei.Equals(dtCar.Rows[j]["imei"].ToString()))
                     {
-                        sql = "Update car_daily Set car_id = '"+dtCar.Rows[j]["car_id"].ToString()+" Where imei ="+ imei + "  where daily_date in ('2017-08-06', '2017-08-07','2017-08-08')";
+                        sql = "Update car_daily Set car_id = '"+dtCar.Rows[j]["car_id"].ToString()+"' Where imei ="+ imei + "  and daily_date in ('2017-08-06', '2017-08-07','2017-08-08')";
                         comDaily.CommandText = sql;
                         comDaily.ExecuteNonQuery();
-                        return;
+                        break;
                     }
                 }
+                pB1.Value = i;
             }
             connDaily.Close();
             pB1.Visible = false;

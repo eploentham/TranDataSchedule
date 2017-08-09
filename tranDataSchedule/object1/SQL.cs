@@ -1529,7 +1529,6 @@ namespace tranDataSchedule.object1
 
                             }
                         }
-
                     }
                 }
             }
