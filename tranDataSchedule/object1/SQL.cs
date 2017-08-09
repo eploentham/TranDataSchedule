@@ -1533,7 +1533,11 @@ namespace tranDataSchedule.object1
                     }
                 }
             }
-
+            //row["รายได้"] = int.Parse(arr[1]);
+            //row["จำนวนรับผู้โดยสาร"] = int.Parse(arr[0]);
+            //row["ค่าเชื้อเพลิง"] = sumdis1 * gas;
+            //row["เหลือ"] = int.Parse(arr[1]) - (sumdis1 * gas + rent);
+            //row["ระยะทางรับผู้โดยสาร"] = double.Parse(arr[2]);
             return sumRow + ":" + sumPrice2 + ":" + distanceCut;
         }
         public static int PriceDay(double distance)//คำนวนค่าแท็กซื่
