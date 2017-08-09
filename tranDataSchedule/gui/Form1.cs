@@ -25,6 +25,7 @@ using tranDataSchedule.object1;
  * 6. ปรับโปรแกรม เปลี่ยน database ไป aws rds
  * 7. Bug customer_id
  * 8. แก้เรื่อง จุดทศนิยม ให้มีแค่ 2 จุด   ยังไม่ได้ทำ  60-08-07 รับแจ้ง 60-08-05 เจ้าของแจ้ง 
+ * 9. แก้เรื่อง charractor set ผิด แก้ไข และต้อง convert update 
  */
 namespace tranDataSchedule
 {
@@ -54,7 +55,7 @@ namespace tranDataSchedule
             txtConGPSOnLIne.Text = tdsC.conn.connOnLine.ConnectionString;//server=localhost;database=gpsonline;user id=root;password=-;port=6318
             txtConnGPS01.Text = tdsC.conn.conn01.ConnectionString;
             //txtConnDaily.Text = tdsC.conn.connOnLine.ConnectionString.Replace("gpsonline","daily_report");
-            txtConnDaily.Text = "server=taxidashboard.ccegjxy0bmku.ap-southeast-1.rds.amazonaws.com;database=daily_report;user id=oriscom;password=mocsiro1*;port=3306";
+            txtConnDaily.Text = "server=taxidashboard.ccegjxy0bmku.ap-southeast-1.rds.amazonaws.com;database=daily_report;user id=oriscom;password=mocsiro1*;port=3306;Character Set=utf8";
 
 
             //txtConGPSOnLIne.Text = "server=localhost;database=gpsonline;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
@@ -447,6 +448,54 @@ namespace tranDataSchedule
             connDaily.Close();
             pB1.Visible = false;
         }
+        private void updateCarID()
+        {
+            /*
+             *60-08-06 แก้โปรแกรม ให้update car_id ใน table car_daily 06,07,08  salee แจ้ง 60-08-08
+             * 
+             */
+            MySqlConnection connDaily = new MySqlConnection();
+            MySqlCommand comDaily = new MySqlCommand();
+            MySqlDataAdapter adap01 = new MySqlDataAdapter(comDaily);
+            DataTable dt = new DataTable();
+            DataTable dtCar = new DataTable();
+            String sql = "";
+            String imei = "";
+            try
+            {
+                connDaily.ConnectionString = txtConnDaily.Text;
+                connDaily.Open();
+                comDaily.Connection = connDaily;
+                sql = "select imei from car_daily where daily_date in ('2017-08-06', '2017-08-07','2017-08-08') group by imei";
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error " + ex.Message.ToString());
+                return;
+            }
+            dtCar = tdsC.selectCarAll(txtConGPSOnLIne.Text);
+            comDaily.CommandText = sql;
+            adap01 = new MySqlDataAdapter(comDaily);      
+            adap01.Fill(dt);
+            pB1.Maximum = dt.Rows.Count;
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                imei = dt.Rows[i]["imei"].ToString();
+                for(int j = 0; j < dtCar.Rows.Count; j++)
+                {
+                    if (imei.Equals(dtCar.Rows[j]["imei"].ToString()))
+                    {
+                        sql = "Update car_daily Set car_id = '"+dtCar.Rows[j]["car_id"].ToString()+" Where imei ="+ imei + "  where daily_date in ('2017-08-06', '2017-08-07','2017-08-08')";
+                        comDaily.CommandText = sql;
+                        comDaily.ExecuteNonQuery();
+                        return;
+                    }
+                }
+            }
+            connDaily.Close();
+            pB1.Visible = false;
+        }
 
         private void chkManual_Click(object sender, EventArgs e)
         {
@@ -481,7 +530,8 @@ namespace tranDataSchedule
 
         private void btnCheckData_Click(object sender, EventArgs e)
         {
-            updateCustomerID();     //5.
+            //updateCustomerID();     //5.
+            updateCarID();          //9.    60-08-09
         }
 
         private void btnTest_Click(object sender, EventArgs e)
