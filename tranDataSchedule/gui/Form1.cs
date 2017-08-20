@@ -26,7 +26,11 @@ using tranDataSchedule.object1;
  * 7. Bug customer_id
  * 8. แก้เรื่อง จุดทศนิยม ให้มีแค่ 2 จุด   ยังไม่ได้ทำ  60-08-07 รับแจ้ง 60-08-05 เจ้าของแจ้ง 
  * 9. แก้เรื่อง charractor set ผิด แก้ไข และต้อง convert update 
+<<<<<<< HEAD
  * 10. แก้เรื่อง รถจอด แล้วรับผู้โดยสาร ทันที จอดรถแล้ว ยังไม่กดmeter รับผู้โดยสารใหม่ แล้วค่อย กด meter ปิด แล้วเปิด
+=======
+ * 10. ceil ทำการคำนวณหา ฐานนิยม โดยการเพิ่ม field เก็บ ceil คือการปัดให้เป็น หลักร้อย
+>>>>>>> origin/master
  */
 namespace tranDataSchedule
 {
@@ -63,7 +67,7 @@ namespace tranDataSchedule
             //txtConnGPS01.Text = "server=localhost;database=gps_backup_01;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
             //txtConnDaily.Text = "server=localhost;database=daily_report;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
             //this.Text = "Last Update 30-07-2560 1. bug date taxi_meter ลงผิด format ลงเป็น 2560";
-            this.Text = "Last Update 06-08-2560 5. ปรับโปรแรกม เพิ่ม Field daily_report.customer_id และ taxi_meter.customer_id";
+            this.Text = "Last Update 14-08-2560 10. ceil ทำการคำนวณหา ฐานนิยม โดยการเพิ่ม field เก็บ ceil คือการปัดให้เป็น หลักร้อย";
             pB1.Visible = false;
         }
         private void showChkAuto()
@@ -116,7 +120,7 @@ namespace tranDataSchedule
             com01.Connection = conn01;        //-2
             MySqlDataAdapter adap01 = new MySqlDataAdapter(com01);
             //MessageBox.Show("bck 11");
-            Double km = 0.0, distance = 0.0, distanceDay=0.0, distanceTripSum=0.0;
+            Double km = 0.0, distance = 0.0, distanceDay=0.0, distanceTripSum=0.0, ceilIncome=0.0;
             DateTime dtStart, dtEnd;
             pB1.Show();
             pB1.Visible = true;
@@ -370,12 +374,20 @@ namespace tranDataSchedule
                 
                 try
                 {
-                    sql1.Append("Insert Into car_daily(car_daily_id, car_id, imei, daily_date, distance, income, trip_cnt, trip_distance, time_start, time_end, time_schedule, bck_server_id, car_Sql, car_cnt, customer_id, date_start) ")
+                    //sql1.Append("Insert Into car_daily(car_daily_id, car_id, imei, daily_date, distance, income, trip_cnt, trip_distance, time_start, time_end, time_schedule, bck_server_id, car_Sql, car_cnt, customer_id, date_start) ")  -10
+                    //.Append("Values(UUID()").Append(",'").Append(dtCar.Rows[i]["car_id"].ToString()).Append("','").Append(dtCar.Rows[i]["imei"].ToString())
+                    //.Append("','").Append(dateStart).Append("','").Append(Math.Round(distanceDay, 2))
+                    //.Append("',").Append(incomeTripSum).Append(",'").Append(TripCnt).Append("','").Append(Math.Round(distanceTripSum, 2))
+                    //.Append("','").Append(timeStart).Append("','").Append(tdsC.setTimeCurrent()).Append("','").Append(txtAutoStart.Text)
+                    //.Append("','").Append(connBck).Append("','").Append(sqlTrip.ToString().Replace("'","''")).Append("','").Append(dt.Rows.Count.ToString()).Append("','").Append(dtCar.Rows[i]["customer_id"].ToString()).Append("', now())");//connBck
+                    ceilIncome = Math.Ceiling(Double.Parse(incomeTripSum.ToString()) / 100) * 100;
+                    sql1.Append("Insert Into car_daily(car_daily_id, car_id, imei, daily_date, distance, income, trip_cnt, trip_distance, time_start, time_end, time_schedule, bck_server_id, car_Sql, car_cnt, customer_id, ceil_income, date_start) ")     //+10
                     .Append("Values(UUID()").Append(",'").Append(dtCar.Rows[i]["car_id"].ToString()).Append("','").Append(dtCar.Rows[i]["imei"].ToString())
                     .Append("','").Append(dateStart).Append("','").Append(Math.Round(distanceDay, 2))
                     .Append("',").Append(incomeTripSum).Append(",'").Append(TripCnt).Append("','").Append(Math.Round(distanceTripSum, 2))
                     .Append("','").Append(timeStart).Append("','").Append(tdsC.setTimeCurrent()).Append("','").Append(txtAutoStart.Text)
-                    .Append("','").Append(connBck).Append("','").Append(sqlTrip.ToString().Replace("'","''")).Append("','").Append(dt.Rows.Count.ToString()).Append("','").Append(dtCar.Rows[i]["customer_id"].ToString()).Append("', now())");//connBck
+                    .Append("','").Append(connBck).Append("','").Append(sqlTrip.ToString().Replace("'", "''"))
+                    .Append("','").Append(dt.Rows.Count.ToString()).Append("','").Append(dtCar.Rows[i]["customer_id"].ToString()).Append("',").Append(ceilIncome).Append(", now())");
                     comDaily.CommandText = sql1.ToString();
 
                     comDaily.ExecuteNonQuery();
