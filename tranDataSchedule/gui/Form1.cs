@@ -26,6 +26,7 @@ using tranDataSchedule.object1;
  * 7. Bug customer_id
  * 8. แก้เรื่อง จุดทศนิยม ให้มีแค่ 2 จุด   ยังไม่ได้ทำ  60-08-07 รับแจ้ง 60-08-05 เจ้าของแจ้ง 
  * 9. แก้เรื่อง charractor set ผิด แก้ไข และต้อง convert update 
+ * 10. แก้เรื่อง รถจอด แล้วรับผู้โดยสาร ทันที จอดรถแล้ว ยังไม่กดmeter รับผู้โดยสารใหม่ แล้วค่อย กด meter ปิด แล้วเปิด
  */
 namespace tranDataSchedule
 {
@@ -274,6 +275,11 @@ namespace tranDataSchedule
                                     insertTrip = true;
 
                                     //lB1.Items.Add("Trip End " + dt.Rows[j]["gps_time"]);
+                                }
+                                if ((int)dt.Rows[j-1]["gps_speed"] == 0)// รถจอด เหมือนกัน    10+
+                                {
+                                    stripEnd = true;
+                                    insertTrip = true;
                                 }
                                 if ((int)dt.Rows[j]["gps_speed"] <= txtGPSError.Value)// รถจอด แต่ gps ส่งข้อมูลเป็น นาที ทำให้อาจ จอดปุ้บ แล้วรับคนใหม่ ทันที
                                 {
