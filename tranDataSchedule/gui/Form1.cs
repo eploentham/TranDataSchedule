@@ -26,11 +26,9 @@ using tranDataSchedule.object1;
  * 7. Bug customer_id
  * 8. แก้เรื่อง จุดทศนิยม ให้มีแค่ 2 จุด   ยังไม่ได้ทำ  60-08-07 รับแจ้ง 60-08-05 เจ้าของแจ้ง 
  * 9. แก้เรื่อง charractor set ผิด แก้ไข และต้อง convert update 
-<<<<<<< HEAD
- * 10. แก้เรื่อง รถจอด แล้วรับผู้โดยสาร ทันที จอดรถแล้ว ยังไม่กดmeter รับผู้โดยสารใหม่ แล้วค่อย กด meter ปิด แล้วเปิด
-=======
- * 10. ceil ทำการคำนวณหา ฐานนิยม โดยการเพิ่ม field เก็บ ceil คือการปัดให้เป็น หลักร้อย
->>>>>>> origin/master
+ * 10. ceil ทำการคำนวณหา ฐานนิยม โดยการเพิ่ม field เก็บ ceil คือการปัดให้เป็น หลักร้อย        2017-08-14
+ * 11. แก้เรื่อง รถจอด แล้วรับผู้โดยสาร ทันที จอดรถแล้ว ยังไม่กดmeter รับผู้โดยสารใหม่ แล้วค่อย กด meter ปิด แล้วเปิด  2017-08-20
+ * 
  */
 namespace tranDataSchedule
 {
@@ -67,7 +65,7 @@ namespace tranDataSchedule
             //txtConnGPS01.Text = "server=localhost;database=gps_backup_01;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
             //txtConnDaily.Text = "server=localhost;database=daily_report;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
             //this.Text = "Last Update 30-07-2560 1. bug date taxi_meter ลงผิด format ลงเป็น 2560";
-            this.Text = "Last Update 14-08-2560 10. ceil ทำการคำนวณหา ฐานนิยม โดยการเพิ่ม field เก็บ ceil คือการปัดให้เป็น หลักร้อย";
+            this.Text = "Last Update 20-08-2560 11. แก้เรื่อง รถจอด แล้วรับผู้โดยสาร ทันที จอดรถแล้ว ยังไม่กดmeter รับผู้โดยสารใหม่ แล้วค่อย กด meter ปิด แล้วเปิด";
             pB1.Visible = false;
         }
         private void showChkAuto()
@@ -102,13 +100,17 @@ namespace tranDataSchedule
             //MySqlConnection[] conn01 = new MySqlConnection[100];     //    +2
             MySqlCommand comDaily = new MySqlCommand();
             MySqlCommand com01 = new MySqlCommand();
+            MySqlCommand comlast = new MySqlCommand();      //  +11
             DataTable dt = new DataTable();
+            DataTable dtLast = new DataTable();     //  +11
             int rowStart = 0, incomeTrip=0, incomeTripSum=0, TripCnt=0, connBck=0;
             
             Boolean stripStart = false;
             Boolean stripStartOld = false;
             Boolean stripEnd = false;
             Boolean insertTrip = false;
+            bool[] noInsert = new bool[20];
+            int noInsertMax = (int)txtGPSErrorNoInsert.Value;
             //MessageBox.Show("bck 11");
             connDaily.ConnectionString = txtConnDaily.Text;
             //conn01.ConnectionString = txtConnGPS01.Text;      //-2
@@ -119,6 +121,7 @@ namespace tranDataSchedule
             comDaily.Connection = connDaily;
             com01.Connection = conn01;        //-2
             MySqlDataAdapter adap01 = new MySqlDataAdapter(com01);
+            MySqlDataAdapter adapLast = new MySqlDataAdapter(comlast);      //  +11
             //MessageBox.Show("bck 11");
             Double km = 0.0, distance = 0.0, distanceDay=0.0, distanceTripSum=0.0, ceilIncome=0.0;
             DateTime dtStart, dtEnd;
@@ -137,10 +140,17 @@ namespace tranDataSchedule
             dtCar = tdsC.selectCarAll(txtConGPSOnLIne.Text);
             //MessageBox.Show("bck 111");
             pB1.Maximum = dtCar.Rows.Count;
+            
             for (int i = 0; i < dtCar.Rows.Count; i++)// มีรถกี่คัน
             {
                 sql1.Clear();
-                
+                /**
+                 * เตรียม noInsert เพื่อ กรณี จอดรถ แต่กด meter ไว้
+                 */
+                for (int k = 0; k < 20; k++)    //
+                {
+                    noInsert[k] = false;
+                }
                 stripStart = false;
                 stripEnd = false;
                 distanceDay = 0.0;
@@ -220,7 +230,22 @@ namespace tranDataSchedule
                     distanceTripSum = 0.0;
                     for (int j = 0; j < dt.Rows.Count; j++)// ดึงรถตาม imei ดึงทั้งวัน
                     {
-                        if (j == 0) continue;
+                        if (j == 0)
+                        {
+                            continue;
+                            if ((Boolean)dt.Rows[j]["gps_input1"] == true)  //  +11
+                            {
+                                sqlTrip.Clear();        //  +11
+                                sqlTrip.Append("Select imei, gps_date_time, gps_date, gps_time, gps_input1, gps_speed, gps_lat, gps_lon, packet_arrived_time From positionbackup Where imei = ")       //  +11
+                                    .Append(dtCar.Rows[i]["imei"].ToString()).Append("  and gps_date = date_add('").Append(dateStart).Append("',INTERVAL -90 day) Order By gps_time desc");        //  +11
+                                comlast = new MySqlCommand();                   // +11
+                                comlast.Connection = conn01;                    // +11
+                                comlast.CommandText = sqlTrip.ToString();       // +11
+                                adapLast = new MySqlDataAdapter(comlast);       //  +11
+                                adapLast.Fill(dtLast);
+                                
+                            }
+                        }
                         try
                         {
                             err = "1000";
@@ -280,7 +305,7 @@ namespace tranDataSchedule
 
                                     //lB1.Items.Add("Trip End " + dt.Rows[j]["gps_time"]);
                                 }
-                                if ((int)dt.Rows[j-1]["gps_speed"] == 0)// รถจอด เหมือนกัน    10+
+                                if ((int)dt.Rows[j-1]["gps_speed"] == 0)// รถจอด เหมือนกัน    11+
                                 {
                                     stripEnd = true;
                                     insertTrip = true;
@@ -290,6 +315,41 @@ namespace tranDataSchedule
                                     stripEnd = true;
                                     insertTrip = true;
                                     //lB1.Items.Add("Trip End " + dt.Rows[j]["gps_time"]);
+                                }
+                            }
+                            /**
+                             * noInsert
+                             * 
+                             */
+                            if(((Boolean)dt.Rows[j]["gps_input1"] == true) && ((int)dt.Rows[j]["gps_speed"] ==0))
+                            {
+                                if (noInsertMax < dt.Rows.Count)
+                                {
+                                    for (int l = 0; l < noInsertMax; l++)
+                                    {
+                                        //if (noInsert[l] == true) continue;
+                                        //noInsert[l] = !(noInsert[l]) ? true : false;
+                                        //break;
+                                        //if (noInsert[l] == false)
+                                        //{
+                                        //    noInsert[l] = true;
+                                        //    break;
+                                        //}
+                                        if ((int)dt.Rows[l]["gps_speed"] == 0)
+                                        {
+                                            noInsert[l] = true;
+                                        }
+                                    }
+                                }
+                            }
+                            /*
+                             *  check insertTrip
+                             */
+                            for(int m = 0; m < noInsertMax; m++)
+                            {
+                                if (noInsert[m] == false)
+                                {
+
                                 }
                             }
                             err = "4000";
@@ -380,7 +440,8 @@ namespace tranDataSchedule
                     //.Append("',").Append(incomeTripSum).Append(",'").Append(TripCnt).Append("','").Append(Math.Round(distanceTripSum, 2))
                     //.Append("','").Append(timeStart).Append("','").Append(tdsC.setTimeCurrent()).Append("','").Append(txtAutoStart.Text)
                     //.Append("','").Append(connBck).Append("','").Append(sqlTrip.ToString().Replace("'","''")).Append("','").Append(dt.Rows.Count.ToString()).Append("','").Append(dtCar.Rows[i]["customer_id"].ToString()).Append("', now())");//connBck
-                    ceilIncome = Math.Ceiling(Double.Parse(incomeTripSum.ToString()) / 100) * 100;
+                    //ceilIncome = Math.Ceiling(Double.Parse(incomeTripSum.ToString()) / 100) * 100;
+                    ceilIncome = 0;
                     sql1.Append("Insert Into car_daily(car_daily_id, car_id, imei, daily_date, distance, income, trip_cnt, trip_distance, time_start, time_end, time_schedule, bck_server_id, car_Sql, car_cnt, customer_id, ceil_income, date_start) ")     //+10
                     .Append("Values(UUID()").Append(",'").Append(dtCar.Rows[i]["car_id"].ToString()).Append("','").Append(dtCar.Rows[i]["imei"].ToString())
                     .Append("','").Append(dateStart).Append("','").Append(Math.Round(distanceDay, 2))
