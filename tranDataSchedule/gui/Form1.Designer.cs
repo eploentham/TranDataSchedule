@@ -30,6 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.btnTest = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
             this.txtGPSError = new System.Windows.Forms.NumericUpDown();
             this.label6 = new System.Windows.Forms.Label();
@@ -59,15 +60,19 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.txtConnDaily = new System.Windows.Forms.TextBox();
-            this.btnTest = new System.Windows.Forms.Button();
+            this.label10 = new System.Windows.Forms.Label();
+            this.txtGPSErrorNoInsert = new System.Windows.Forms.NumericUpDown();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtGPSError)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.gbManual.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.txtGPSErrorNoInsert)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label10);
+            this.groupBox1.Controls.Add(this.txtGPSErrorNoInsert);
             this.groupBox1.Controls.Add(this.btnTest);
             this.groupBox1.Controls.Add(this.label8);
             this.groupBox1.Controls.Add(this.txtGPSError);
@@ -86,28 +91,38 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "เงื่อนไข";
             // 
+            // btnTest
+            // 
+            this.btnTest.Location = new System.Drawing.Point(530, 297);
+            this.btnTest.Name = "btnTest";
+            this.btnTest.Size = new System.Drawing.Size(160, 23);
+            this.btnTest.TabIndex = 9;
+            this.btnTest.Text = "Test Connection";
+            this.btnTest.UseVisualStyleBackColor = true;
+            this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
+            // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(527, 199);
+            this.label8.Location = new System.Drawing.Point(529, 169);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(111, 13);
+            this.label8.Size = new System.Drawing.Size(189, 13);
             this.label8.TabIndex = 8;
-            this.label8.Text = "ค่าคลาดเคลื่อน จอดรถ";
+            this.label8.Text = "ค่าคลาดเคลื่อน จอดรถรับผู้โดยสารทันที";
             // 
             // txtGPSError
             // 
-            this.txtGPSError.Location = new System.Drawing.Point(653, 197);
+            this.txtGPSError.Location = new System.Drawing.Point(653, 185);
             this.txtGPSError.Maximum = new decimal(new int[] {
-            20,
+            40,
             0,
             0,
             0});
             this.txtGPSError.Name = "txtGPSError";
             this.txtGPSError.Size = new System.Drawing.Size(65, 20);
-            this.txtGPSError.TabIndex = 7;
+            this.txtGPSError.TabIndex = 40;
             this.txtGPSError.Value = new decimal(new int[] {
-            7,
+            40,
             0,
             0,
             0});
@@ -373,15 +388,31 @@
             this.txtConnDaily.Size = new System.Drawing.Size(900, 20);
             this.txtConnDaily.TabIndex = 9;
             // 
-            // btnTest
+            // label10
             // 
-            this.btnTest.Location = new System.Drawing.Point(530, 297);
-            this.btnTest.Name = "btnTest";
-            this.btnTest.Size = new System.Drawing.Size(160, 23);
-            this.btnTest.TabIndex = 9;
-            this.btnTest.Text = "Test Connection";
-            this.btnTest.UseVisualStyleBackColor = true;
-            this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(529, 208);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(182, 13);
+            this.label10.TabIndex = 41;
+            this.label10.Text = "ค่าคลาดเคลื่อน กดmeter แต่ไม่ออกรถ";
+            // 
+            // txtGPSErrorNoInsert
+            // 
+            this.txtGPSErrorNoInsert.Location = new System.Drawing.Point(653, 224);
+            this.txtGPSErrorNoInsert.Maximum = new decimal(new int[] {
+            40,
+            0,
+            0,
+            0});
+            this.txtGPSErrorNoInsert.Name = "txtGPSErrorNoInsert";
+            this.txtGPSErrorNoInsert.Size = new System.Drawing.Size(65, 20);
+            this.txtGPSErrorNoInsert.TabIndex = 42;
+            this.txtGPSErrorNoInsert.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
             // 
             // Form1
             // 
@@ -408,6 +439,7 @@
             this.groupBox2.PerformLayout();
             this.gbManual.ResumeLayout(false);
             this.gbManual.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.txtGPSErrorNoInsert)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -446,6 +478,8 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.MaskedTextBox txtAutoStart;
         private System.Windows.Forms.Button btnTest;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.NumericUpDown txtGPSErrorNoInsert;
     }
 }
 
