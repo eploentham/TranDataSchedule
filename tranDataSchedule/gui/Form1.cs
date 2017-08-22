@@ -132,6 +132,10 @@ namespace tranDataSchedule
             //MessageBox.Show("bck " );
             dtCar = tdsC.selectCarAll(txtConGPSOnLIne.Text);
             //MessageBox.Show("bck 111");
+            comDaily.CommandText = "Delete From car_daily Where daily_date = '"+ dateStart+"'";
+            comDaily.ExecuteNonQuery();
+            comDaily.CommandText = "Delete From taxi_meter Where t_start_time >= '" + dateStart + " 00:00:00' and t_start_time <= '"+ dateStart+" 23:59:59'";
+            comDaily.ExecuteNonQuery();
             pB1.Maximum = dtCar.Rows.Count;
             for (int i = 0; i < dtCar.Rows.Count; i++)// มีรถกี่คัน
             {
