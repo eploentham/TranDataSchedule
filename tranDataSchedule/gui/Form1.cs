@@ -28,7 +28,8 @@ using tranDataSchedule.object1;
  * 9. แก้เรื่อง charractor set ผิด แก้ไข และต้อง convert update 
  * 10. ceil ทำการคำนวณหา ฐานนิยม โดยการเพิ่ม field เก็บ ceil คือการปัดให้เป็น หลักร้อย        2017-08-14
  * 11. แก้เรื่อง รถจอด แล้วรับผู้โดยสาร ทันที จอดรถแล้ว ยังไม่กดmeter รับผู้โดยสารใหม่ แล้วค่อย กด meter ปิด แล้วเปิด  2017-08-20
- * 
+ * 12. เรื่อง รับผู้โดยสาร ก่อนเที่ยงคืน แล้วเลยเที่ยงคืน ยังส่งผู้โดบสารไม่เสร็จ  2017-08-22
+ * 13. เรื่อง กดmeter แล้วจอดรถ        2017-08-22
  */
 namespace tranDataSchedule
 {
@@ -100,9 +101,9 @@ namespace tranDataSchedule
             //MySqlConnection[] conn01 = new MySqlConnection[100];     //    +2
             MySqlCommand comDaily = new MySqlCommand();
             MySqlCommand com01 = new MySqlCommand();
-            MySqlCommand comlast = new MySqlCommand();      //  +11
+            MySqlCommand comlast = new MySqlCommand();      //  +12
             DataTable dt = new DataTable();
-            DataTable dtLast = new DataTable();     //  +11
+            DataTable dtLast = new DataTable();     //  +12
             int rowStart = 0, incomeTrip=0, incomeTripSum=0, TripCnt=0, connBck=0;
             
             Boolean stripStart = false;
@@ -110,7 +111,7 @@ namespace tranDataSchedule
             Boolean stripEnd = false;
             Boolean insertTrip = false;
             bool[] noInsert = new bool[20];
-            int noInsertMax = (int)txtGPSErrorNoInsert.Value;
+            int noInsertMax = (int)txtGPSErrorNoInsert.Value;          //+13
             //MessageBox.Show("bck 11");
             connDaily.ConnectionString = txtConnDaily.Text;
             //conn01.ConnectionString = txtConnGPS01.Text;      //-2
@@ -121,7 +122,7 @@ namespace tranDataSchedule
             comDaily.Connection = connDaily;
             com01.Connection = conn01;        //-2
             MySqlDataAdapter adap01 = new MySqlDataAdapter(com01);
-            MySqlDataAdapter adapLast = new MySqlDataAdapter(comlast);      //  +11
+            MySqlDataAdapter adapLast = new MySqlDataAdapter(comlast);      //  +12
             //MessageBox.Show("bck 11");
             Double km = 0.0, distance = 0.0, distanceDay=0.0, distanceTripSum=0.0, ceilIncome=0.0;
             DateTime dtStart, dtEnd;
@@ -147,7 +148,7 @@ namespace tranDataSchedule
                 /**
                  * เตรียม noInsert เพื่อ กรณี จอดรถ แต่กด meter ไว้
                  */
-                for (int k = 0; k < 20; k++)    //
+                for (int k = 0; k < 20; k++)    //   //+13
                 {
                     noInsert[k] = false;
                 }
@@ -233,17 +234,23 @@ namespace tranDataSchedule
                         if (j == 0)
                         {
                             continue;
-                            if ((Boolean)dt.Rows[j]["gps_input1"] == true)  //  +11
+                            if ((Boolean)dt.Rows[j]["gps_input1"] == true)  //  +12
                             {
-                                sqlTrip.Clear();        //  +11
-                                sqlTrip.Append("Select imei, gps_date_time, gps_date, gps_time, gps_input1, gps_speed, gps_lat, gps_lon, packet_arrived_time From positionbackup Where imei = ")       //  +11
-                                    .Append(dtCar.Rows[i]["imei"].ToString()).Append("  and gps_date = date_add('").Append(dateStart).Append("',INTERVAL -90 day) Order By gps_time desc");        //  +11
-                                comlast = new MySqlCommand();                   // +11
-                                comlast.Connection = conn01;                    // +11
-                                comlast.CommandText = sqlTrip.ToString();       // +11
-                                adapLast = new MySqlDataAdapter(comlast);       //  +11
+                                sqlTrip.Clear();        //  +12
+                                sqlTrip.Append("Select imei, gps_date_time, gps_date, gps_time, gps_input1, gps_speed, gps_lat, gps_lon, packet_arrived_time From positionbackup Where imei = ")       //  +12
+                                    .Append(dtCar.Rows[i]["imei"].ToString()).Append("  and gps_date = date_add('").Append(dateStart).Append("',INTERVAL -1 day) Order By gps_time desc");        //  +12
+                                comlast = new MySqlCommand();                   // +12
+                                comlast.Connection = conn01;                    // +12
+                                comlast.CommandText = sqlTrip.ToString();       // +12
+                                adapLast = new MySqlDataAdapter(comlast);       //  +12
                                 adapLast.Fill(dtLast);
-                                
+                                for(int m = 0; m < dtLast.Rows.Count; m++)
+                                {
+                                    if((Boolean)dt.Rows[m]["gps_input1"] == false)
+                                    {
+
+                                    }
+                                }
                             }
                         }
                         try
@@ -321,7 +328,7 @@ namespace tranDataSchedule
                              * noInsert
                              * 
                              */
-                            if(((Boolean)dt.Rows[j]["gps_input1"] == true) && ((int)dt.Rows[j]["gps_speed"] ==0))
+                            if(((Boolean)dt.Rows[j]["gps_input1"] == true) && ((int)dt.Rows[j]["gps_speed"] ==0))   //+13
                             {
                                 if (noInsertMax < dt.Rows.Count)
                                 {
@@ -345,7 +352,7 @@ namespace tranDataSchedule
                             /*
                              *  check insertTrip
                              */
-                            for(int m = 0; m < noInsertMax; m++)
+                            for(int m = 0; m < noInsertMax; m++)   //+13
                             {
                                 if (noInsert[m] == false)
                                 {
