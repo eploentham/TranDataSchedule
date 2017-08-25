@@ -88,7 +88,7 @@ namespace tranDataSchedule
         private void selectCar(String dateStart, String dateEnd)
         {
             //String dateStart = "", dateEnd = "";
-            String sql = "", carId="", day2="", err="", timeStart="", timeEnd="", sBeforeMidnight="";
+            String sql = "", carId="", day2="", err="", timeStart="", timeEnd="";
             StringBuilder sql1 = new StringBuilder();
             StringBuilder sqlTrip = new StringBuilder();
             StringBuilder addr = new StringBuilder();
@@ -107,10 +107,10 @@ namespace tranDataSchedule
             MySqlCommand comlast = new MySqlCommand();      //  +12
             DataTable dt = new DataTable();
             DataTable dtLast = new DataTable();     //  +12
-            int rowStart = 0, incomeTrip=0, incomeTripSum=0, TripCnt=0, connBck=0, gpsSpeed0Input1ON=0;
+            int rowStart = 0, incomeTrip=0, incomeTripSum=0, TripCnt=0, connBck=0;
             
             Boolean stripStart = false;
-            Boolean stripStartOld = false, tripBeforeMidnight=false;
+            Boolean stripStartOld = false;
             Boolean stripEnd = false;
             Boolean insertTrip = false;
             //bool[] noInsert = new bool[20];
@@ -127,9 +127,14 @@ namespace tranDataSchedule
             MySqlDataAdapter adap01 = new MySqlDataAdapter(com01);
             MySqlDataAdapter adapLast = new MySqlDataAdapter(comlast);      //  +12
             //MessageBox.Show("bck 11");
+<<<<<<< HEAD
             Double km = 0.0, distance = 0.0, distanceDay=0.0, distanceTripSum=0.0, ceilIncome=0.0, distanceTripBeforeMidnight=0.0;
             //long gpsLatStart = 0, gpsLonStart = 0, gpsLatBeforeMidnightEnd = 0, gpsLonBeforeMidnightEnd = 0;
             DateTime dtStart, dtEnd, dtStartBeforeMidnight;
+=======
+            Double km = 0.0, distance = 0.0, distanceDay=0.0, distanceTripSum=0.0, ceilIncome=0.0;
+            DateTime dtStart, dtEnd;
+>>>>>>> parent of 8659ff2... แก้bug 12,13
             pB1.Show();
             pB1.Visible = true;
             pB1.Minimum = 0;
@@ -162,13 +167,9 @@ namespace tranDataSchedule
                 //}
                 stripStart = false;
                 stripEnd = false;
-                tripBeforeMidnight = false;
-                sBeforeMidnight = "";
                 distanceDay = 0.0;
                 distanceTripSum = 0.0;
-                gpsSpeed0Input1ON = 0;
                 incomeTripSum = 0;
-                distanceTripBeforeMidnight = 0.0;
                 TripCnt = 0;
                 timeStart = tdsC.setTimeCurrent();
                 if (!dtCar.Rows[i]["imei"].ToString().Equals("57012878"))     //// for test
@@ -250,7 +251,12 @@ namespace tranDataSchedule
                     {
                         if (j == 0)
                         {
+<<<<<<< HEAD
                             if ((Boolean)dt.Rows[j]["gps_input1"] == true)  //  +12 รับ trip มาก่อนเที่ยงคืน
+=======
+                            continue;
+                            if ((Boolean)dt.Rows[j]["gps_input1"] == true)  //  +12
+>>>>>>> parent of 8659ff2... แก้bug 12,13
                             {
                                 sqlTrip.Clear();        //  +12
                                 sqlTrip.Append("Select imei, gps_date_time, gps_date, gps_time, gps_input1, gps_speed, gps_lat, gps_lon, packet_arrived_time From positionbackup Where imei = ")       //  +12
@@ -262,13 +268,9 @@ namespace tranDataSchedule
                                 adapLast.Fill(dtLast);
                                 for(int m = 0; m < dtLast.Rows.Count; m++)
                                 {
-                                    //if (m == 0)
-                                    //{
-                                    //    gpsLatBeforeMidnightEnd = (long)dtLast.Rows[m]["gps_lat"];
-                                    //    gpsLonBeforeMidnightEnd = (long)dtLast.Rows[m]["gps_lon"];
-                                    //}
-                                    if((Boolean)dtLast.Rows[m]["gps_input1"] == false)
+                                    if((Boolean)dt.Rows[m]["gps_input1"] == false)
                                     {
+<<<<<<< HEAD
                                         //MessageBox.Show("dtLast.Rows.Count "+ dtLast.Rows.Count);
                                         gpsLatStart.Clear();
                                         gpsLonStart.Clear();
@@ -283,6 +285,9 @@ namespace tranDataSchedule
                                         dtS.Append(sBeforeMidnight);
                                         distanceTripBeforeMidnight += tdsC.sql.CalcDistanceKilo(Convert.ToDouble(dtLast.Rows[m - 1]["gps_lat"]) / 1000000, Convert.ToDouble(dtLast.Rows[m - 1]["gps_lon"]) / 1000000, Convert.ToDouble(dtLast.Rows[0]["gps_lat"]) / 1000000, Convert.ToDouble(dtLast.Rows[0]["gps_lon"]) / 1000000);
                                         break;
+=======
+
+>>>>>>> parent of 8659ff2... แก้bug 12,13
                                     }
                                 }
                             }
@@ -350,7 +355,10 @@ namespace tranDataSchedule
                                     }
                                 }
                             }
+<<<<<<< HEAD
                             
+=======
+>>>>>>> parent of 8659ff2... แก้bug 12,13
                             err = "3000";
                             if (((Boolean)dt.Rows[j]["gps_input1"] == false) && ((Boolean)dt.Rows[j - 1]["gps_input1"] == true) && stripStart)//trip end จะคำนวรหา end trip ได้ต้อง stripStart = true ก่อน
                             /**
@@ -386,21 +394,41 @@ namespace tranDataSchedule
                              * noInsert
                              * 
                              */
-                            if (gpsSpeed0Input1ON >= txtGPSErrorNoInsert.Value)   //+13
+                            if(((Boolean)dt.Rows[j]["gps_input1"] == true) && ((int)dt.Rows[j]["gps_speed"] ==0))   //+13
                             {
+<<<<<<< HEAD
                                 //insertTrip = false;   //  ยังไใม่ใช้
+=======
+                                if (noInsertMax < dt.Rows.Count)
+                                {
+                                    for (int l = 0; l < noInsertMax; l++)
+                                    {
+                                        //if (noInsert[l] == true) continue;
+                                        //noInsert[l] = !(noInsert[l]) ? true : false;
+                                        //break;
+                                        //if (noInsert[l] == false)
+                                        //{
+                                        //    noInsert[l] = true;
+                                        //    break;
+                                        //}
+                                        if ((int)dt.Rows[l]["gps_speed"] == 0)
+                                        {
+                                            noInsert[l] = true;
+                                        }
+                                    }
+                                }
+>>>>>>> parent of 8659ff2... แก้bug 12,13
                             }
                             /*
                              *  check insertTrip
                              */
-                            //int c = 0;
-                            //for(int m = 0; m < noInsertMax; m++)   //+13
-                            //{
-                            //    if (noInsert[m] == false)
-                            //    {
-                            //        c++;
-                            //    }
-                            //}
+                            for(int m = 0; m < noInsertMax; m++)   //+13
+                            {
+                                if (noInsert[m] == false)
+                                {
+
+                                }
+                            }
                             err = "4000";
                             if (stripStart && stripEnd && insertTrip)
                             {
@@ -411,10 +439,6 @@ namespace tranDataSchedule
                                 {
                                     if (rowStart == 0) continue;
                                     distance += tdsC.sql.CalcDistanceKilo(Convert.ToDouble(dt.Rows[k - 1]["gps_lat"]) / 1000000, Convert.ToDouble(dt.Rows[k - 1]["gps_lon"]) / 1000000, Convert.ToDouble(dt.Rows[k]["gps_lat"]) / 1000000, Convert.ToDouble(dt.Rows[k]["gps_lon"]) / 1000000);
-                                }
-                                if (tripBeforeMidnight) //+12 รับ trip มาก่อนเที่ยงคืน
-                                {
-                                    distance += distanceTripBeforeMidnight;
                                 }
                                 err = "4002";
                                 incomeTrip = tdsC.sql.PriceDay1(distance);
@@ -441,6 +465,7 @@ namespace tranDataSchedule
                                     //.Append(",'").Append(String.Format("{0:yyyy-MM-dd HH:mm:ss}", dt.Rows[j]["gps_date_time"])).Append("','")
                                     //.Append(dt.Rows[j]["gps_lat"].ToString()).Append("','").Append(dt.Rows[j]["gps_lon"].ToString()).Append("',")
                                     //.Append(distance).Append(",").Append(incomeTrip).Append(") ");        // -1.
+<<<<<<< HEAD
                                     //if (tripBeforeMidnight) //+12 รับ trip มาก่อนเที่ยงคืน
                                     //{
                                         sql1.Append("Insert Into taxi_meter(t_imei, t_start_time, t_start_gps_lat, t_start_gps_lon")
@@ -459,6 +484,14 @@ namespace tranDataSchedule
                                     //    .Append(dt.Rows[j]["gps_lon"].ToString()).Append("',").Append(Math.Round(distance, 2)).Append(",")
                                     //    .Append(incomeTrip).Append(",'").Append(dtCar.Rows[i]["customer_id"].ToString()).Append("') ");       // +1.
                                     //}
+=======
+                                    sql1.Append("Insert Into taxi_meter(t_imei, t_start_time, t_start_gps_lat, t_start_gps_lon")
+                                    .Append(", t_off_time, t_off_gps_lat, t_off_gps_lon, t_distance, t_taxi_fare, customer_id ) ")
+                                    .Append("Values('").Append(dtCar.Rows[i]["imei"].ToString()).Append("','").Append(dtS.ToString()).Append("','").Append(dt.Rows[rowStart]["gps_lat"].ToString()).Append("','").Append(dt.Rows[rowStart]["gps_lon"].ToString()).Append("'")
+                                    .Append(",'").Append(dtE.ToString()).Append("','").Append(dt.Rows[j]["gps_lat"].ToString()).Append("','")
+                                    .Append(dt.Rows[j]["gps_lon"].ToString()).Append("',").Append(Math.Round(distance,2)).Append(",")
+                                    .Append(incomeTrip).Append(",'").Append(dtCar.Rows[i]["customer_id"].ToString()).Append("') ");       // +1.
+>>>>>>> parent of 8659ff2... แก้bug 12,13
                                     comDaily.CommandText = sql1.ToString();
                                     //MessageBox.Show("sql  " + sql1.ToString());
                                     comDaily.ExecuteNonQuery();
