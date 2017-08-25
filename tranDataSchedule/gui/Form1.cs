@@ -58,8 +58,8 @@ namespace tranDataSchedule
             timer1.Start();
             txtConGPSOnLIne.Text = tdsC.conn.connOnLine.ConnectionString;//server=localhost;database=gpsonline;user id=root;password=-;port=6318
             txtConnGPS01.Text = tdsC.conn.conn01.ConnectionString;
-            //txtConnDaily.Text = tdsC.conn.connOnLine.ConnectionString.Replace("gpsonline","daily_report");
-            txtConnDaily.Text = "server=taxidashboard.ccegjxy0bmku.ap-southeast-1.rds.amazonaws.com;database=daily_report;user id=oriscom;password=mocsiro1*;port=3306;Character Set=utf8";
+            txtConnDaily.Text = tdsC.conn.connOnLine.ConnectionString.Replace("gpsonline", "daily_report");     // for test
+            //txtConnDaily.Text = "server=taxidashboard.ccegjxy0bmku.ap-southeast-1.rds.amazonaws.com;database=daily_report;user id=oriscom;password=mocsiro1*;port=3306;Character Set=utf8";
 
 
             //txtConGPSOnLIne.Text = "server=localhost;database=gpsonline;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
@@ -100,6 +100,7 @@ namespace tranDataSchedule
             DataTable dtCar = new DataTable();
             MySqlConnection connDaily = new MySqlConnection();
             MySqlConnection conn01 = new MySqlConnection();     //    -2
+            MySqlConnection connlast = new MySqlConnection();     //    +12
             //MySqlConnection[] conn01 = new MySqlConnection[100];     //    +2
             MySqlCommand comDaily = new MySqlCommand();
             MySqlCommand com01 = new MySqlCommand();
@@ -170,10 +171,10 @@ namespace tranDataSchedule
                 distanceTripBeforeMidnight = 0.0;
                 TripCnt = 0;
                 timeStart = tdsC.setTimeCurrent();
-                //if (!dtCar.Rows[i]["imei"].ToString().Equals("58063983"))     //// for test
-                //{
-                //    continue;
-                //}
+                if (!dtCar.Rows[i]["imei"].ToString().Equals("57012878"))     //// for test
+                {
+                    continue;
+                }
                 //if (!dtCar.Rows[i]["imei"].ToString().Equals("59034945"))     //// for test
                 //{
                 //    continue;
@@ -195,9 +196,12 @@ namespace tranDataSchedule
                     conn01.Close();       //  -2
                 }     //  -2
                 //MessageBox.Show("bck "+bck.ToString());
-                conn01.ConnectionString = "Server=" + tdsC.conn.hostDB + ";Database=gps_backup_" + bck.ToString() + ";Uid=" + tdsC.conn.userDB + ";Pwd=" + tdsC.conn.passwordDB + ";port = 6318;Connection Timeout = 300;default command timeout=0;";       //-2
-                //conn01.ConnectionString = "Server=" + tdsC.conn.hostDB + ";Database=gps_backup_" + bck.ToString() + ";Uid=" + tdsC.conn.userDB + ";port = 3306;Connection Timeout = 300;default command timeout=0;"; // for test conn01.Open();       //-2
+                //conn01.ConnectionString = "Server=" + tdsC.conn.hostDB + ";Database=gps_backup_" + bck.ToString() + ";Uid=" + tdsC.conn.userDB + ";Pwd=" + tdsC.conn.passwordDB + ";port = 6318;Connection Timeout = 300;default command timeout=0;";       //-2
+                conn01.ConnectionString = "Server=" + tdsC.conn.hostDB + ";Database=gps_backup_" + bck.ToString() + ";Uid=" + tdsC.conn.userDB + ";port = 3306;Connection Timeout = 300;default command timeout=0;"; // for test conn01.Open();       //-2
                 conn01.Open();  // -2
+                //connLast.ConnectionString = "Server=" + tdsC.conn.hostDB + ";Database=gps_backup_" + bck.ToString() + ";Uid=" + tdsC.conn.userDB + ";Pwd=" + tdsC.conn.passwordDB + ";port = 6318;Connection Timeout = 300;default command timeout=0;";       //+12
+                connlast.ConnectionString = "Server=" + tdsC.conn.hostDB + ";Database=gps_backup_" + bck.ToString() + ";Uid=" + tdsC.conn.userDB + ";port = 3306;Connection Timeout = 300;default command timeout=0;"; // for test
+                connlast.Open();        //+12
                 //MessageBox.Show("bck 222");
                 com01 = new MySqlCommand();         // +4
                 com01.Connection = conn01;          //+4
@@ -252,7 +256,7 @@ namespace tranDataSchedule
                                 sqlTrip.Append("Select imei, gps_date_time, gps_date, gps_time, gps_input1, gps_speed, gps_lat, gps_lon, packet_arrived_time From positionbackup Where imei = ")       //  +12
                                     .Append(dtCar.Rows[i]["imei"].ToString()).Append("  and gps_date = date_add('").Append(dateStart).Append("',INTERVAL -1 day) Order By gps_time desc");        //  +12
                                 comlast = new MySqlCommand();                   // +12
-                                comlast.Connection = conn01;                    // +12
+                                comlast.Connection = connlast;                    // +12
                                 comlast.CommandText = sqlTrip.ToString();       // +12
                                 adapLast = new MySqlDataAdapter(comlast);       //  +12
                                 adapLast.Fill(dtLast);
@@ -275,6 +279,8 @@ namespace tranDataSchedule
                                         tripBeforeMidnight = true;
                                         dtStartBeforeMidnight = (DateTime)dtLast.Rows[m-1]["gps_date_time"];
                                         sBeforeMidnight = dtStartBeforeMidnight.Year + "-" + dtStartBeforeMidnight.ToString("MM-dd HH:mm:ss");
+                                        dtS.Clear();// +1.
+                                        dtS.Append(sBeforeMidnight);
                                         distanceTripBeforeMidnight += tdsC.sql.CalcDistanceKilo(Convert.ToDouble(dtLast.Rows[m - 1]["gps_lat"]) / 1000000, Convert.ToDouble(dtLast.Rows[m - 1]["gps_lon"]) / 1000000, Convert.ToDouble(dtLast.Rows[0]["gps_lat"]) / 1000000, Convert.ToDouble(dtLast.Rows[0]["gps_lon"]) / 1000000);
                                         break;
                                     }
@@ -319,6 +325,9 @@ namespace tranDataSchedule
                                     rowStart = j;
                                     gpsLatStart.Append(dt.Rows[j]["gps_lat"]);
                                     gpsLonStart.Append(dt.Rows[j]["gps_lon"]);
+                                    dtStart = (DateTime)dt.Rows[rowStart]["gps_date_time"];     // +1.
+                                    dtS.Clear();// +1.
+                                    dtS.Append(dtStart.Year + "-" + dtStart.ToString("MM-dd HH:mm:ss"));// +1.
                                     //lB1.Items.Add("Trip Start "+ dt.Rows[j]["gps_time"]);
                                 }
                                 err = "2001";
@@ -329,10 +338,13 @@ namespace tranDataSchedule
                                     rowStart = j;
                                     gpsLatStart.Append(dt.Rows[j]["gps_lat"]);
                                     gpsLonStart.Append(dt.Rows[j]["gps_lon"]);
+                                    dtStart = (DateTime)dt.Rows[rowStart]["gps_date_time"];     // +1.
+                                    dtS.Clear();// +1.
+                                    dtS.Append(dtStart.Year + "-" + dtStart.ToString("MM-dd HH:mm:ss"));// +1.
                                 }
-                                if ((j >= 0) && (j <= 20))// นาทีแรก
+                                if ((j >= 0) && (j <= 20))// นาทีแรกๆ
                                 {
-                                    if (((Boolean)dt.Rows[j]["gps_input1"] == true) && ((int)dt.Rows[j]["gps_speed"] > 0))// +13
+                                    if (((Boolean)dt.Rows[j]["gps_input1"] == true) && ((int)dt.Rows[j]["gps_speed"] == 0))// +13
                                     {
                                         gpsSpeed0Input1ON++;// +13
                                     }
@@ -344,26 +356,31 @@ namespace tranDataSchedule
                             /**
                             * การหาtrip end
                             * จะมี ความคลาดเคลื่อน เนื่องจาก กด meter หยุดแล้วแต่ รถยังมีความเร็ว แต่ความเร็วจะเป้น 0 ก็จะเป็นข้อมูลถัดไป
+                            * 
+                            * ไม่ต้องหาเงื่อนไขอื่นๆ เพราะยาก ให้ใช้อันเดียว คือ กด input1=0 พอแล้ว     2017-08-25
+                            * ให้ start trip ยากๆ แต่จบ trip ง่ายๆ
                             **/
                             {
-                                if ((int)dt.Rows[j]["gps_speed"] == 0)// รถจอด
-                                {
-                                    stripEnd = true;
-                                    insertTrip = true;
+                                //if ((int)dt.Rows[j]["gps_speed"] == 0)// รถจอด
+                                //{
+                                //    stripEnd = true;
+                                //    insertTrip = true;
 
-                                    //lB1.Items.Add("Trip End " + dt.Rows[j]["gps_time"]);
-                                }
-                                if ((int)dt.Rows[j-1]["gps_speed"] == 0)// รถจอด เหมือนกัน    11+
-                                {
-                                    stripEnd = true;
-                                    insertTrip = true;
-                                }
-                                if ((int)dt.Rows[j]["gps_speed"] <= txtGPSError.Value)// รถจอด แต่ gps ส่งข้อมูลเป็น นาที ทำให้อาจ จอดปุ้บ แล้วรับคนใหม่ ทันที
-                                {
-                                    stripEnd = true;
-                                    insertTrip = true;
-                                    //lB1.Items.Add("Trip End " + dt.Rows[j]["gps_time"]);
-                                }
+                                //    //lB1.Items.Add("Trip End " + dt.Rows[j]["gps_time"]);
+                                //}
+                                //if ((int)dt.Rows[j-1]["gps_speed"] == 0)// รถจอด เหมือนกัน    11+
+                                //{
+                                //    stripEnd = true;
+                                //    insertTrip = true;
+                                //}
+                                //if ((int)dt.Rows[j]["gps_speed"] <= txtGPSError.Value)// รถจอด แต่ gps ส่งข้อมูลเป็น นาที ทำให้อาจ จอดปุ้บ แล้วรับคนใหม่ ทันที
+                                //{
+                                //    stripEnd = true;
+                                //    insertTrip = true;
+                                //    //lB1.Items.Add("Trip End " + dt.Rows[j]["gps_time"]);
+                                //}
+                                stripEnd = true;        // +14
+                                insertTrip = true;      // +14
                             }
                             /**
                              * noInsert
@@ -392,6 +409,7 @@ namespace tranDataSchedule
                                 
                                 for (int k = rowStart; k < j; k++)//คำนวณหา ระยะทาง ระหว่างtrip
                                 {
+                                    if (rowStart == 0) continue;
                                     distance += tdsC.sql.CalcDistanceKilo(Convert.ToDouble(dt.Rows[k - 1]["gps_lat"]) / 1000000, Convert.ToDouble(dt.Rows[k - 1]["gps_lon"]) / 1000000, Convert.ToDouble(dt.Rows[k]["gps_lat"]) / 1000000, Convert.ToDouble(dt.Rows[k]["gps_lon"]) / 1000000);
                                 }
                                 if (tripBeforeMidnight) //+12 รับ trip มาก่อนเที่ยงคืน
@@ -411,9 +429,9 @@ namespace tranDataSchedule
                                 
                                 try
                                 {
-                                    dtStart = (DateTime)dt.Rows[rowStart]["gps_date_time"];     // +1.
-                                    dtS.Clear();// +1.
-                                    dtS.Append(dtStart.Year + "-" + dtStart.ToString("MM-dd HH:mm:ss"));// +1.
+                                    //dtStart = (DateTime)dt.Rows[rowStart]["gps_date_time"];     // +1.
+                                    //dtS.Clear();// +1.
+                                    //dtS.Append(dtStart.Year + "-" + dtStart.ToString("MM-dd HH:mm:ss"));// +1.
                                     dtEnd = (DateTime)dt.Rows[j]["gps_date_time"];      // +1.
                                     dtE.Clear();// +1.
                                     dtE.Append(dtEnd.Year + "-" + dtEnd.ToString("MM-dd HH:mm:ss"));// +1.
@@ -425,8 +443,6 @@ namespace tranDataSchedule
                                     //.Append(distance).Append(",").Append(incomeTrip).Append(") ");        // -1.
                                     //if (tripBeforeMidnight) //+12 รับ trip มาก่อนเที่ยงคืน
                                     //{
-                                        dtS.Clear();// +1.
-                                        dtS.Append(sBeforeMidnight);
                                         sql1.Append("Insert Into taxi_meter(t_imei, t_start_time, t_start_gps_lat, t_start_gps_lon")
                                         .Append(", t_off_time, t_off_gps_lat, t_off_gps_lon, t_distance, t_taxi_fare, customer_id ) ")
                                         .Append("Values('").Append(dtCar.Rows[i]["imei"].ToString()).Append("','").Append(dtS.ToString()).Append("','").Append(gpsLatStart).Append("','").Append(gpsLonStart).Append("'")
@@ -447,6 +463,10 @@ namespace tranDataSchedule
                                     //MessageBox.Show("sql  " + sql1.ToString());
                                     comDaily.ExecuteNonQuery();
                                     stripStart = false;
+                                    stripEnd = false;
+                                    tripBeforeMidnight = false;
+                                    distanceTripBeforeMidnight = 0;
+                                    gpsSpeed0Input1ON = 0;
                                     //throw ();
                                 }
                                 catch (Exception ex)
@@ -506,7 +526,7 @@ namespace tranDataSchedule
                 }
                 catch (Exception ex)
                 {
-                    lB1.Items.Add(ex.Message.ToString());
+                    lB1.Items.Add("Insert Into car_daily " + ex.Message.ToString());
                 }
                 finally
                 {
@@ -522,6 +542,7 @@ namespace tranDataSchedule
                 //lB1.Refresh();
                 pB1.Value = i;
                 conn01.Close();       //-2
+                connlast.Close();       //+12
                 this.Refresh();
                 
             }
