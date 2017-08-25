@@ -330,11 +330,15 @@ namespace tranDataSchedule
                                     gpsLatStart.Append(dt.Rows[j]["gps_lat"]);
                                     gpsLonStart.Append(dt.Rows[j]["gps_lon"]);
                                 }
+                                if ((j >= 0) && (j <= 20))// นาทีแรก
+                                {
+                                    if (((Boolean)dt.Rows[j]["gps_input1"] == true) && ((int)dt.Rows[j]["gps_speed"] > 0))// +13
+                                    {
+                                        gpsSpeed0Input1ON++;// +13
+                                    }
+                                }
                             }
-                            if(((Boolean)dt.Rows[j - 1]["gps_input1"] == true) && ((int)dt.Rows[j + 1]["gps_speed"] > 0))// +13
-                            {
-                                gpsSpeed0Input1ON++;// +13
-                            }
+                            
                             err = "3000";
                             if (((Boolean)dt.Rows[j]["gps_input1"] == false) && ((Boolean)dt.Rows[j - 1]["gps_input1"] == true) && stripStart)//trip end จะคำนวรหา end trip ได้ต้อง stripStart = true ก่อน
                             /**
@@ -367,7 +371,7 @@ namespace tranDataSchedule
                              */
                             if (gpsSpeed0Input1ON >= txtGPSErrorNoInsert.Value)   //+13
                             {
-                                insertTrip = false;
+                                //insertTrip = false;   //  ยังไใม่ใช้
                             }
                             /*
                              *  check insertTrip
@@ -447,7 +451,7 @@ namespace tranDataSchedule
                                 }
                                 catch (Exception ex)
                                 {
-                                    lB1.Items.Add(ex.Message.ToString());
+                                    lB1.Items.Add("Insert Into taxi_meter " + ex.Message.ToString());
                                 }
                                 finally
                                 {
@@ -460,7 +464,7 @@ namespace tranDataSchedule
                         }
                         catch(Exception ex)
                         {
-                            //MessageBox.Show("Error "+err+" row "+i+"\n" + ex.Message.ToString());
+                            MessageBox.Show("Error "+err+" row "+i+"\n" + ex.Message.ToString());
                             lB1.Items.Add(ex.Message.ToString());
                         }
                         
