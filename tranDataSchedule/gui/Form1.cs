@@ -62,11 +62,11 @@ namespace tranDataSchedule
             txtConnDaily.Text = "server=taxidashboard.ccegjxy0bmku.ap-southeast-1.rds.amazonaws.com;database=daily_report;user id=oriscom;password=mocsiro1*;port=3306;Character Set=utf8";
 
 
-            //txtConGPSOnLIne.Text = "server=localhost;database=gpsonline;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
-            //txtConnGPS01.Text = "server=localhost;database=gps_backup_01;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
-            //txtConnDaily.Text = "server=localhost;database=daily_report;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";
+            //txtConGPSOnLIne.Text = "server=localhost;database=gpsonline;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";      //for test
+            //txtConnGPS01.Text = "server=localhost;database=gps_backup_01;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";      //for test
+            //txtConnDaily.Text = "server=localhost;database=daily_report;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";      //for test
             //this.Text = "Last Update 30-07-2560 1. bug date taxi_meter ลงผิด format ลงเป็น 2560";
-            this.Text = "Last Update 20-08-2560 11. แก้เรื่อง รถจอด แล้วรับผู้โดยสาร ทันที จอดรถแล้ว ยังไม่กดmeter รับผู้โดยสารใหม่ แล้วค่อย กด meter ปิด แล้วเปิด";
+            this.Text = "Last Update 26-08-2560 12. 13.";
             pB1.Visible = false;
         }
         private void showChkAuto()
@@ -145,7 +145,8 @@ namespace tranDataSchedule
             //MessageBox.Show("bck 111");
             comDaily.CommandText = "Delete From car_daily Where daily_date = '" + dateStart + "'";
             comDaily.ExecuteNonQuery();
-            comDaily.CommandText = "Delete From taxi_meter Where t_start_time >= '" + dateStart + " 00:00:00' and t_start_time <= '" + dateStart + " 23:59:59'";
+            //comDaily.CommandText = "Delete From taxi_meter Where t_start_time >= '" + dateStart + " 00:00:00' and t_start_time <= '" + dateStart + " 23:59:59'";
+            comDaily.CommandText = "Delete From taxi_meter Where daily_date >= '" + dateStart + " 00:00:00' and daily_date <= '" + dateStart + " 23:59:59'";
             comDaily.ExecuteNonQuery();
             pB1.Maximum = dtCar.Rows.Count;
 
@@ -170,7 +171,7 @@ namespace tranDataSchedule
                 distanceTripBeforeMidnight = 0.0;
                 TripCnt = 0;
                 timeStart = tdsC.setTimeCurrent();
-                //if (!dtCar.Rows[i]["imei"].ToString().Equals("60016364"))     //// for test
+                //if (!dtCar.Rows[i]["imei"].ToString().Equals("60016378"))     //// for test
                 //{
                 //    continue;
                 //}
@@ -248,7 +249,7 @@ namespace tranDataSchedule
                         if (j == 0)
                         {
                             //continue;     //on +12
-                            if ((Boolean)dt.Rows[j]["gps_input1"] == true)  //  +12 รับ trip มาก่อนเที่ยงคืน
+                            if (((Boolean)dt.Rows[j]["gps_input1"] == true) && ((int)dt.Rows[j]["gps_speed"] > 0))  //  +12 รับ trip มาก่อนเที่ยงคืน
                             {
                                 sqlTrip.Clear();        //  +12
                                 sqlTrip.Append("Select imei, gps_date_time, gps_date, gps_time, gps_input1, gps_speed, gps_lat, gps_lon, packet_arrived_time From positionbackup Where imei = ")       //  +12
@@ -430,26 +431,27 @@ namespace tranDataSchedule
                                         dtS.Clear();// +1.
                                         dtS.Append(sBeforeMidnight);
                                         sql1.Append("Insert Into taxi_meter(t_imei, t_start_time, t_start_gps_lat, t_start_gps_lon")
-                                        .Append(", t_off_time, t_off_gps_lat, t_off_gps_lon, t_distance, t_taxi_fare, customer_id ) ")
+                                        .Append(", t_off_time, t_off_gps_lat, t_off_gps_lon, t_distance, t_taxi_fare, customer_id, daily_date ) ")
                                         .Append("Values('").Append(dtCar.Rows[i]["imei"].ToString()).Append("','").Append(dtS.ToString()).Append("','").Append(gpsLatBeforeMidnight).Append("','").Append(gpsLonBeforeMidnight).Append("'")
                                         .Append(",'").Append(dtE.ToString()).Append("','").Append(dt.Rows[j]["gps_lat"].ToString()).Append("','")
                                         .Append(dt.Rows[j]["gps_lon"].ToString()).Append("',").Append(Math.Round(distance, 2)).Append(",")
-                                        .Append(incomeTrip).Append(",'").Append(dtCar.Rows[i]["customer_id"].ToString()).Append("') ");       // +1.
+                                        .Append(incomeTrip).Append(",'").Append(dtCar.Rows[i]["customer_id"].ToString()).Append("','").Append(dateStart).Append("') ");       // +1.
                                     }
                                     else
                                     {
                                         sql1.Append("Insert Into taxi_meter(t_imei, t_start_time, t_start_gps_lat, t_start_gps_lon")
-                                        .Append(", t_off_time, t_off_gps_lat, t_off_gps_lon, t_distance, t_taxi_fare, customer_id ) ")
+                                        .Append(", t_off_time, t_off_gps_lat, t_off_gps_lon, t_distance, t_taxi_fare, customer_id, daily_date ) ")
                                         .Append("Values('").Append(dtCar.Rows[i]["imei"].ToString()).Append("','").Append(dtS.ToString()).Append("','").Append(dt.Rows[rowStart]["gps_lat"].ToString()).Append("','").Append(dt.Rows[rowStart]["gps_lon"].ToString()).Append("'")
                                         .Append(",'").Append(dtE.ToString()).Append("','").Append(dt.Rows[j]["gps_lat"].ToString()).Append("','")
                                         .Append(dt.Rows[j]["gps_lon"].ToString()).Append("',").Append(Math.Round(distance, 2)).Append(",")
-                                        .Append(incomeTrip).Append(",'").Append(dtCar.Rows[i]["customer_id"].ToString()).Append("') ");       // +1.
+                                        .Append(incomeTrip).Append(",'").Append(dtCar.Rows[i]["customer_id"].ToString()).Append("','").Append(dateStart).Append("') ");       // +1.
                                     }
                                     comDaily.CommandText = sql1.ToString();
                                     //MessageBox.Show("sql  " + sql1.ToString());
                                     comDaily.ExecuteNonQuery();
                                     stripStart = false;
                                     gpsSpeed0Input1ON = 0;
+                                    tripBeforeMidnight = false;
                                     //throw ();
                                 }
                                 catch (Exception ex)
