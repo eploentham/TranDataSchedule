@@ -58,13 +58,16 @@ namespace tranDataSchedule
             timer1.Start();
             txtConGPSOnLIne.Text = tdsC.conn.connOnLine.ConnectionString;//server=localhost;database=gpsonline;user id=root;password=-;port=6318
             txtConnGPS01.Text = tdsC.conn.conn01.ConnectionString;
-            //txtConnDaily.Text = tdsC.conn.connOnLine.ConnectionString.Replace("gpsonline","daily_report");
-            txtConnDaily.Text = "server=taxidashboard.ccegjxy0bmku.ap-southeast-1.rds.amazonaws.com;database=daily_report;user id=oriscom;password=mocsiro1*;port=3306;Character Set=utf8";
+            txtConnDaily.Text = tdsC.conn.connOnLine.ConnectionString.Replace("gpsonline", "daily_report");
+            txtAutoStart.Text = "0300";
+            //txtConnDaily.Text = "server=taxidashboard.ccegjxy0bmku.ap-southeast-1.rds.amazonaws.com;database=daily_report;user id=oriscom;password=mocsiro1*;port=3306;Character Set=utf8";
 
 
             //txtConGPSOnLIne.Text = "server=localhost;database=gpsonline;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";      //for test
             //txtConnGPS01.Text = "server=localhost;database=gps_backup_01;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";      //for test
             //txtConnDaily.Text = "server=localhost;database=daily_report;user id=root;password='';port=3306;Connection Timeout = 300;default command timeout=0;";      //for test
+
+            txtConnGPS01.Enabled = false;
             //this.Text = "Last Update 30-07-2560 1. bug date taxi_meter ลงผิด format ลงเป็น 2560";
             this.Text = "Last Update 26-08-2560 12. 13.";
             pB1.Visible = false;
