@@ -30,6 +30,8 @@
         {
             this.components = new System.ComponentModel.Container();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.txtGPSErrorNoInsert = new System.Windows.Forms.NumericUpDown();
             this.btnTest = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
             this.txtGPSError = new System.Windows.Forms.NumericUpDown();
@@ -60,13 +62,11 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.txtConnDaily = new System.Windows.Forms.TextBox();
-            this.label10 = new System.Windows.Forms.Label();
-            this.txtGPSErrorNoInsert = new System.Windows.Forms.NumericUpDown();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.txtGPSErrorNoInsert)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtGPSError)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.gbManual.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.txtGPSErrorNoInsert)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -90,6 +90,32 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "เงื่อนไข";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(529, 208);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(182, 13);
+            this.label10.TabIndex = 41;
+            this.label10.Text = "ค่าคลาดเคลื่อน กดmeter แต่ไม่ออกรถ";
+            // 
+            // txtGPSErrorNoInsert
+            // 
+            this.txtGPSErrorNoInsert.Location = new System.Drawing.Point(653, 224);
+            this.txtGPSErrorNoInsert.Maximum = new decimal(new int[] {
+            40,
+            0,
+            0,
+            0});
+            this.txtGPSErrorNoInsert.Name = "txtGPSErrorNoInsert";
+            this.txtGPSErrorNoInsert.Size = new System.Drawing.Size(65, 20);
+            this.txtGPSErrorNoInsert.TabIndex = 42;
+            this.txtGPSErrorNoInsert.Value = new decimal(new int[] {
+            8,
+            0,
+            0,
+            0});
             // 
             // btnTest
             // 
@@ -388,32 +414,6 @@
             this.txtConnDaily.Size = new System.Drawing.Size(900, 20);
             this.txtConnDaily.TabIndex = 9;
             // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(529, 208);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(182, 13);
-            this.label10.TabIndex = 41;
-            this.label10.Text = "ค่าคลาดเคลื่อน กดmeter แต่ไม่ออกรถ";
-            // 
-            // txtGPSErrorNoInsert
-            // 
-            this.txtGPSErrorNoInsert.Location = new System.Drawing.Point(653, 224);
-            this.txtGPSErrorNoInsert.Maximum = new decimal(new int[] {
-            40,
-            0,
-            0,
-            0});
-            this.txtGPSErrorNoInsert.Name = "txtGPSErrorNoInsert";
-            this.txtGPSErrorNoInsert.Size = new System.Drawing.Size(65, 20);
-            this.txtGPSErrorNoInsert.TabIndex = 42;
-            this.txtGPSErrorNoInsert.Value = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -434,12 +434,12 @@
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.txtGPSErrorNoInsert)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtGPSError)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.gbManual.ResumeLayout(false);
             this.gbManual.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.txtGPSErrorNoInsert)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
