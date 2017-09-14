@@ -30,6 +30,8 @@ using tranDataSchedule.object1;
  * 11. แก้เรื่อง รถจอด แล้วรับผู้โดยสาร ทันที จอดรถแล้ว ยังไม่กดmeter รับผู้โดยสารใหม่ แล้วค่อย กด meter ปิด แล้วเปิด  2017-08-20
  * 12. เรื่อง รับผู้โดยสาร ก่อนเที่ยงคืน แล้วเลยเที่ยงคืน ยังส่งผู้โดบสารไม่เสร็จ  2017-08-22
  * 13. เรื่อง กดmeter แล้วจอดรถ        2017-08-22
+ * 14. ปรับให้ connection กลับมาใช้ server3 2017-09-09
+ * 15. ปรับ start trip ให้รับแค่ input1 เท่านั้น   2017-09-14
  */
 namespace tranDataSchedule
 {
@@ -320,20 +322,23 @@ namespace tranDataSchedule
                                 * จะมี ความคลาดเคลื่อน เนื่องจาก
                                 **/
                             {
-                                if ((int)dt.Rows[j]["gps_speed"] > 0)// กดmeter แล้วออกรถเลย
-                                {
-                                    stripStart = true;
-                                    stripEnd = false;
-                                    rowStart = j;
-                                    //lB1.Items.Add("Trip Start "+ dt.Rows[j]["gps_time"]);
-                                }
-                                err = "2001";
-                                if ((j<dt.Rows.Count) && ((int)dt.Rows[j]["gps_speed"] == 0) && ((int)dt.Rows[j + 1]["gps_speed"] > 0))// กดmeter แล้วยังไม่ออกรถทันที
-                                {
-                                    stripStart = true;
-                                    stripEnd = false;
-                                    rowStart = j;
-                                }
+                                //if ((int)dt.Rows[j]["gps_speed"] > 0)// กดmeter แล้วออกรถเลย       //-15
+                                //{
+                                //    stripStart = true;
+                                //    stripEnd = false;
+                                //    rowStart = j;
+                                //    //lB1.Items.Add("Trip Start "+ dt.Rows[j]["gps_time"]);
+                                //}
+                                //err = "2001";
+                                //if ((j<dt.Rows.Count) && ((int)dt.Rows[j]["gps_speed"] == 0) && ((int)dt.Rows[j + 1]["gps_speed"] > 0))// กดmeter แล้วยังไม่ออกรถทันที       //-15
+                                //{
+                                //    stripStart = true;
+                                //    stripEnd = false;
+                                //    rowStart = j;
+                                //}
+                                stripStart = true;      //  +15
+                                stripEnd = false;      //  +15
+                                rowStart = j;      //  +15
                             }
                             err = "2020";
                             if ((j >= 0)&&(j <= 20)){       //+13
