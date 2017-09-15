@@ -71,7 +71,7 @@ namespace tranDataSchedule
 
             txtConnGPS01.Enabled = false;
             //this.Text = "Last Update 30-07-2560 1. bug date taxi_meter ลงผิด format ลงเป็น 2560";
-            this.Text = "Last Update 26-08-2560 12. 13.";
+            this.Text = "Last Update 15-09-2560 15.";
             pB1.Visible = false;
         }
         private void showChkAuto()
@@ -354,24 +354,26 @@ namespace tranDataSchedule
                             * จะมี ความคลาดเคลื่อน เนื่องจาก กด meter หยุดแล้วแต่ รถยังมีความเร็ว แต่ความเร็วจะเป้น 0 ก็จะเป็นข้อมูลถัดไป
                             **/
                             {
-                                if ((int)dt.Rows[j]["gps_speed"] == 0)// รถจอด
-                                {
-                                    stripEnd = true;
-                                    insertTrip = true;
+                                //if ((int)dt.Rows[j]["gps_speed"] == 0)// รถจอด        // 15-
+                                //{
+                                //    stripEnd = true;
+                                //    insertTrip = true;
 
-                                    //lB1.Items.Add("Trip End " + dt.Rows[j]["gps_time"]);
-                                }
-                                if ((int)dt.Rows[j - 1]["gps_speed"] == 0)// รถจอด เหมือนกัน    11+
-                                {
-                                    stripEnd = true;
-                                    insertTrip = true;
-                                }
-                                if ((int)dt.Rows[j]["gps_speed"] <= txtGPSError.Value)// รถจอด แต่ gps ส่งข้อมูลเป็น นาที ทำให้อาจ จอดปุ้บ แล้วรับคนใหม่ ทันที
-                                {
-                                    stripEnd = true;
-                                    insertTrip = true;
-                                    //lB1.Items.Add("Trip End " + dt.Rows[j]["gps_time"]);
-                                }
+                                //    //lB1.Items.Add("Trip End " + dt.Rows[j]["gps_time"]);
+                                //}
+                                //if ((int)dt.Rows[j - 1]["gps_speed"] == 0)// รถจอด เหมือนกัน    11+     // 15-
+                                //{
+                                //    stripEnd = true;
+                                //    insertTrip = true;
+                                //}
+                                //if ((int)dt.Rows[j]["gps_speed"] <= txtGPSError.Value)// รถจอด แต่ gps ส่งข้อมูลเป็น นาที ทำให้อาจ จอดปุ้บ แล้วรับคนใหม่ ทันที      // 15-
+                                //{
+                                //    stripEnd = true;
+                                //    insertTrip = true;
+                                //    //lB1.Items.Add("Trip End " + dt.Rows[j]["gps_time"]);
+                                //}
+                                stripEnd = true;
+                                insertTrip = true;
                             }
                             /**
                              * noInsert
